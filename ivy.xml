@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ivy-module version="2.0">
+  <info organisation="IntelliFactory" module="if-ws-formlets-jqueryui" revision="2.0.9" />
+  <configurations>
+    <conf name="build"/>
+    <conf name="default"/>
+    <conf name="debug" extends="default"/>
+    <conf name="doc" />
+  </configurations>
+  <publications>
+    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" type="dll" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" type="dll.js" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" type="dll.dep" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" type="xml" conf="default" />
+    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" type="api.zip" conf="doc" />
+    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" type="Documentation.zip" conf="doc" />
+    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" type="pdb" conf="debug" />
+  </publications>
+  
+  <dependencies>
+    <dependency name="if-ws" rev="2.0.10" conf="build->compiler" />
+    <dependency name="if-ws" rev="2.0.10" conf="default->default" />
+    <dependency name="if-formlet" rev="2.0.11" conf="default" />
+    <dependency name="if-ws-formlets" rev="2.0.11" conf="default" />
+    <dependency name="if-ws-jquery" rev="2.0.9" conf="default" />
+    <dependency name="if-ws-jqueryui" rev="2.0.9" conf="default" />
+    <dependency name="if-ws-html" rev="2.0.9" conf="default" />
+    <dependency name="if-ws-ecma" rev="2.0.9" conf="default"/>
+    <dependency name="if-ws-web" rev="2.0.9" conf="default" />
+  </dependencies>
+</ivy-module>
