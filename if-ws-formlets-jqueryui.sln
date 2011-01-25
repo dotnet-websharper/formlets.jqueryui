@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ivy.xml = ivy.xml
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.JQueryUI.Test", "IntelliFactory.WebSharper.Formlet.JQueryUI.Test\IntelliFactory.WebSharper.JQueryUI.Test.fsproj", "{35514715-41DF-4C17-A9EC-D80ABCD9E353}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Formlet.JQueryUI.Test", "IntelliFactory.WebSharper.Formlet.JQueryUI.Test\IntelliFactory.WebSharper.Formlet.JQueryUI.Test.fsproj", "{35514715-41DF-4C17-A9EC-D80ABCD9E353}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelliFactory.WebSharper.Formlet.JQueryUI.TestWeb", "IntelliFactory.WebSharper.Formlet.JQueryUI.TestWeb\IntelliFactory.WebSharper.Formlet.JQueryUI.TestWeb.csproj", "{C96C4489-BE06-496A-8FC1-4251947EFBA3}"
 EndProject

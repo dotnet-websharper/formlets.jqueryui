@@ -17,8 +17,7 @@ module Enhance =
                 JQueryUI.Controls.Button label
             | Result.Failure _ ->
                 let conf = JQueryUI.ButtonConfiguration(Label = label)
-                // TODO: fix
-                conf.Set "disabled" true
+                conf.Disabled <- true
                 JQueryUI.Controls.CustomButton conf
             |> Formlet.Map ignore
         )
@@ -37,7 +36,7 @@ module Enhance =
                     |> Formlet.Map (fun _ -> value)
                 | Failure fs -> 
                     let conf = JQueryUI.ButtonConfiguration(Label = submitLabel)
-                    conf.Set "disabled" true
+                    conf.Disabled <- true
                     JQueryUI.Controls.CustomButton conf
                     |> Formlet.MapResult (fun _ -> Failure fs)
             let reset =
@@ -51,10 +50,10 @@ module Enhance =
                     return ()
                 }
             (
-                Formlet.Return (fun v _ -> v)                
+                Formlet.Return (fun v _ -> v)
                 <*> submit            
                 <*> reset
             )            
-            |> Formlet.WithLayout Layout.Horizontal
+            |> Formlet.Horizontal
         Enhance.WithSubmitAndReset formlet submitReset 
     
