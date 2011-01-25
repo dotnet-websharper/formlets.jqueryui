@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4a6bae18-3f58-4add-a7e8-b5380efdf0d1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Html</Name>
+    <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
     <RootNamespace>$(Name)</RootNamespace>
     <AssemblyName>IntelliFactory.WebSharper.Formlet.JQueryUI</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
