@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4a6bae18-3f58-4add-a7e8-b5380efdf0d1}</ProjectGuid>
+    <ProjectGuid>{35514715-41df-4c17-a9ec-d80abcd9e353}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
+    <Name>IntelliFactory.WebSharper.Formlet.JQueryUI.Test</Name>
     <RootNamespace>$(Name)</RootNamespace>
-    <AssemblyName>IntelliFactory.WebSharper.Formlet.JQueryUI</AssemblyName>
+    <AssemblyName>IntelliFactory.WebSharper.Formlet.JQueryUI.Test</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,32 +31,23 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\$(Name).XML</DocumentationFile>
   </PropertyGroup>
-  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.FSharp.targets" />
-  <PropertyGroup>
-    <WEBSHARPER_HOME>$(IfIvyLibDir)</WEBSHARPER_HOME>
-  </PropertyGroup>
-  <Import Project="$(IfIvyLibDir)/IntelliFactory.WebSharper.targets" Condition="Exists('$(IfIvyLibDir)/IntelliFactory.WebSharper.targets')" />
-  <ItemGroup>
-    <Compile Include="Utils.fs" />
-    <Compile Include="Controls.fs" />
-    <Compile Include="Enhance.fs" />
-    <Compile Include="Test.fs" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core">
       <Private>True</Private>
-    </Reference>    
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
+    <Reference Include="IntelliFactory.Html" />
     <Reference Include="IntelliFactory.Json" />
     <Reference Include="IntelliFactory.WebSharper" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
     <Reference Include="IntelliFactory.WebSharper.JQuery" />
     <Reference Include="IntelliFactory.WebSharper.Html" />
     <Reference Include="IntelliFactory.Formlet.Base" />
+    <Reference Include="IntelliFactory.WebSharper.Web" />
     <Reference Include="IntelliFactory.Reactive" />
     <Reference Include="IntelliFactory.WebSharper.Core" />
     <Reference Include="IntelliFactory.WebSharper.Control" />
@@ -65,5 +56,20 @@
     <Reference Include="IntelliFactory.WebSharper.JQueryUI" />
     <Reference Include="IntelliFactory.WebSharper.Formlet" />
     <Reference Include="IntelliFactory.WebSharper.Ecma" />
+  </ItemGroup>
+  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.FSharp.targets" />
+  <PropertyGroup>
+    <WEBSHARPER_HOME>$(IfIvyLibDir)</WEBSHARPER_HOME>
+  </PropertyGroup>
+  <Import Project="$(IfIvyLibDir)/IntelliFactory.WebSharper.targets" Condition="Exists('$(IfIvyLibDir)/IntelliFactory.WebSharper.targets')" />
+  <ItemGroup>
+    <ProjectReference Include="..\IntelliFactory.WebSharper.Formlet.JQueryUI\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
+      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
+      <Project>{4a6bae18-3f58-4add-a7e8-b5380efdf0d1}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.fs" />
   </ItemGroup>
 </Project>

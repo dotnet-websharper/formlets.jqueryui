@@ -26,12 +26,12 @@ module internal Utils =
             Span [b], r, s
 
     [<JavaScript>]
-    let FormAndElement formlet =        
+    let FormAndElement formlet =
         let formlet = Formlet.WithLayoutOrDefault formlet
         let form = Formlet.BuildForm formlet
         match (formlet :> IFormlet<_,_>).Layout.Apply(form.Body) with
         | Some (body, _) -> form, body.Element
-        | None           -> form, Div []                                        
+        | None           -> form, Div []
                 
     /// Implementation for IObservable representing
     /// the state of controls.
@@ -42,6 +42,7 @@ module internal Utils =
                 Event : Event<Result<'T>>
             }
         interface IObservable<Result<'T>> with
+            
             [<JavaScript>]
             member this.Subscribe(o) =
                 o.OnNext(this.Initial)
@@ -50,6 +51,9 @@ module internal Utils =
                         o.OnNext(v)
                     )
                 disp
+
+
+
         [<JavaScript>]
         member this.Trigger(v) =
             this.Event.Trigger v

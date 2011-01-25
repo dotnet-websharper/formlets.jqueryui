@@ -20,10 +20,11 @@ module Controls =
     [<JavaScript>]
     let CustomButton (conf : JQueryUI.ButtonConfiguration) =
         MkFormlet <| fun () ->
+            
             let state = State<int>.New()
-            let count = ref 0            
+            let count = ref 0
             let button = JQueryUI.Button.New conf
-            button.OnClick(fun _ ->                
+            button.OnClick(fun _ ->
                 state.Trigger (Success count.Value)
                 incr count
             )
@@ -37,7 +38,7 @@ module Controls =
     /// the button is clicked.
     [<JavaScript>]
     let Button (label : string) =
-        JQueryUI.ButtonConfiguration(Label = label)        
+        JQueryUI.ButtonConfiguration(Label = label)
         |> CustomButton
 
     /// Constructs an Accordion formlet, displaying the given list of formlets on separate tabs.
@@ -47,9 +48,9 @@ module Controls =
             let fs = 
                 fs 
                 |> List.map (fun (l,f) -> 
-                    let form, elem = Utils.FormAndElement f                                    
+                    let form, elem = Utils.FormAndElement f
                     l, form, elem
-                )            
+                )
             let state =
                 let state = 
                     fs
@@ -57,8 +58,8 @@ module Controls =
                     |> Reactive.Sequence
                 Reactive.Select state (fun rs ->
                     Result.Sequence rs
-                    
-                )   
+
+                )
             let acc =
                 fs
                 |> List.map (fun (label, _, elem) -> label , elem)
@@ -69,9 +70,9 @@ module Controls =
                 fs 
                 |> List.iter (fun (_,f,_) -> 
                     f.Notify null
-                )                      
+                )
             acc, reset , state
-    
+
 
 
     [<Inline "jQuery($acc.element.el).accordion('option','active')">]
@@ -86,7 +87,7 @@ module Controls =
             let fs = 
                 fs 
                 |> List.mapi (fun ix (l,f) -> 
-                    let form, elem = Utils.FormAndElement f                           
+                    let form, elem = Utils.FormAndElement f
                     l, (Reactive.Heat form.State), form.Notify, elem
                 )
                 |> Array.ofList
@@ -95,7 +96,7 @@ module Controls =
                 fs
                 |> Array.map (fun (label, _, _, elem) -> label , elem)
                 |> List.ofArray
-                |> JQueryUI.Accordion.New            
+                |> JQueryUI.Accordion.New
             
             
             let state = Event<_>()
@@ -106,7 +107,7 @@ module Controls =
             // Update on tab select
             // OnSelectA accordion update
             accordion.OnChange (fun ev _->
-                update <| ActiveAccordionIndex accordion                
+                update <| ActiveAccordionIndex accordion
             )
                 
             let reset () =
@@ -115,14 +116,14 @@ module Controls =
                 update 0
 
             // Initialize reset
-            let accordion = accordion |>! OnAfterRender (fun _ -> reset ())            
+            let accordion = accordion |>! OnAfterRender (fun _ -> reset ())
             accordion, reset , Reactive.Switch state.Publish
 
     
     /// ...
     [<JavaScript>]
     let Autocomplete def (source: list<string>) : Formlet<string> =
-        MkFormlet <| fun () ->            
+        MkFormlet <| fun () ->
             let state = State<string>.New(def)
             let input = 
                 let i = Input [Text def]
@@ -134,24 +135,24 @@ module Controls =
                     input , 
                     JQueryUI.AutocompleteConfiguration(
                         Source = Array.ofList source
-                    )                
-                )            
+                    )
+                )
             let reset () =
                 input.Value <- def
-                state.Trigger (Success def)                
+                state.Trigger (Success def)
             ac, reset, state
 
     
     [<JavaScript>]
-    let Datepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =                        
-        MkFormlet <| fun () ->            
+    let Datepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
+        MkFormlet <| fun () ->
             let date = JQueryUI.Datepicker.New()
             let defDate =
                 match def with
                 | Some d -> d
-                | None   -> new EcmaScript.Date(())
+                | None   -> new EcmaScript.Date ()
                 
-            Log ("defDate", defDate)                           
+            Log ("defDate", defDate)
             let state = State<EcmaScript.Date   >.New()
             date.OnSelect (fun date ->
                 state.Trigger (Success date)
@@ -165,7 +166,7 @@ module Controls =
                     Log "Trigger default"
                     state.Trigger (Success d)
                 | None   -> 
-                    state.Trigger (Failure [])  
+                    state.Trigger (Failure [])
             date 
             |> OnAfterRender (fun _ ->
                 Log "OnAfter render - reset"
@@ -200,26 +201,26 @@ module Controls =
             [<JavaScript>]
             static member Default =
                 {
-                    Animate = false                    
-                    Orientation = Horizontal                    
-                    Value = 0                    
+                    Animate = false
+                    Orientation = Horizontal
+                    Value = 0
                     Min = 0
                     Max = 100
                     Width = None
                     Height = None
-                }         
+                }
 
     /// ...
     [<JavaScript>]
-    let Slider (conf: option<SliderConfiguration>) : Formlet<int> =                        
+    let Slider (conf: option<SliderConfiguration>) : Formlet<int> =
         MkFormlet <| fun () ->
             let conf =
                 match conf with
                 | Some c    -> c
                 | None      -> SliderConfiguration.Default
             
-            let style =            
-                let width w = "width: " + (string w) + "px;"                
+            let style =
+                let width w = "width: " + (string w) + "px;"
                 let height h = "height: " + (string h) + "px;"
                 match conf.Width, conf.Height with
                 | Some w, Some h -> 
@@ -267,21 +268,21 @@ module Controls =
             let stateEv = Event<list<string>>()
             let state =
                 Reactive.Select stateEv.Publish (fun ids -> 
-                    let x =                                                                               
-                        ids                    
+                    let x =
+                        ids
                         |> List.map (fun id -> dict.[id])
                         |> Reactive.Sequence
-                    Reactive.Select x List.ofSeq                    
+                    Reactive.Select x List.ofSeq
                 )
                 |> Reactive.Switch
             
-            let state = Reactive.Select state Result.Sequence                 
+            let state = Reactive.Select state Result.Sequence
                             
             let list = OL [Attr.Style "list-style-type: none; margin: 0; padding: 0;"];
             let stopEv = Event<_>()
             let config  = {stop = fun _ -> stopEv.Trigger ()}
-            let sortList = JQueryUI.Sortable.New(list, unbox box config)      
-                                
+            let sortList = JQueryUI.Sortable.New(list, unbox box config)
+
             // Trigger new state based on the order
             let update () =
                 ToArray sortList
@@ -306,7 +307,7 @@ module Controls =
                     
                     
                 )
-                |> List.iter (fun el -> list.Append el)                
+                |> List.iter (fun el -> list.Append el)
                 update ()
 
             let list = list |>! OnAfterRender (fun _ -> reset ())
@@ -341,7 +342,7 @@ module Controls =
                 fs 
                 |> List.iter (fun (_,f,_) -> 
                     f.Notify null
-                )                      
+                )
             tabs, reset , state
 
     [<Inline "jQuery($tabs.element.el).tabs({select: function(x,ui){$f(ui.index)}})">]
@@ -361,7 +362,7 @@ module Controls =
             let fs = 
                 fs 
                 |> List.mapi (fun ix (l,f) -> 
-                    let form, elem = Utils.FormAndElement f                                 
+                    let form, elem = Utils.FormAndElement f
                     l, (Reactive.Heat form.State), form.Notify, elem
                 )
                 |> Array.ofList
@@ -370,8 +371,7 @@ module Controls =
                 fs
                 |> Array.map (fun (label, _, _, elem) -> label , elem)
                 |> List.ofArray
-                |> JQueryUI.Tabs.New            
-            
+                |> JQueryUI.Tabs.New
             
             let state = Event<_>()
             let update index =
@@ -386,7 +386,7 @@ module Controls =
                 update 0
 
             // Initialize reset
-            let tabs = tabs |>! OnAfterRender (fun _ -> reset ())            
+            let tabs = tabs |>! OnAfterRender (fun _ -> reset ())
             tabs, reset , Reactive.Switch state.Publish
 
     
@@ -440,124 +440,127 @@ module Controls =
         | Some v    -> [Attr.Style v]
         | None      -> []
     
-    [<JavaScript>]
-    let DragAndDrop (dc: DragAndDropConfig) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
-        Formlet.New <| fun () ->    
-            
-            let resList = ref []
-            let state = State<_>.New()
-
-
-            let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
-            
-            let dragClass =
-                match dc.DraggableClass with
-                | Some v    -> v
-                | None      -> "draggableItem"
-            
-            let dragElem id label =     
-                Span (GetStyle dc.DraggableStyle)
-                -<
-                [Attr.Class dragClass]
-                -< 
-                [Attr.Id id] 
-                -< [Text label]
-                            
-            let dropElem id label =     
-                Span (GetStyle dc.DroppableStyle)
-                -<
-                (GetClass dc.DroppableClass) 
-                -< 
-                [Attr.Id id] 
-                -< [Text label]
-            
-            // Drag
-            let dragCnf = JQueryUI.DraggableConfiguration()
-            dragCnf.Helper <- "clone"
-            
-            let idDrs =
-                vs
-                |> List.map (fun (label, value, added)  ->
-                    let id = NewId ()
-                    dict.[id] <- (label, value)
-                    let elem = dragElem id label
-                    id , JQueryUI.Draggable.New(elem, dragCnf)  , added 
-                )
-            let ids = List.map (fun (x,_,_) -> x) idDrs
-            let draggables = List.map (fun (_,y,_) -> y) idDrs
-            let initials = List.choose (fun (id,_,add) -> if add then Some id else None) idDrs
-
-            let dropPanel = 
-                Div (GetClass dc.DropContainerClass)
-            
-            let update () =
-                resList.Value
-                |> List.rev
-                |> List.map (fun (_, x) -> x)
-                |> Success
-                |> state.Trigger
-            
-            let removeElem (el: Element) id =
-                el.Remove()
-                resList := (List.filter (fun (elId, _) -> elId <> id) resList.Value)
-                if not dc.AcceptMany then
-                    JQuery.Of("#" + id).Show().Ignore
-                update ()
-                            
-            let addItem id =
-                let (label, value) = dict.[id]
-                let newId = NewId ()
-                if not dc.AcceptMany then
-                    JQuery.Of("#" + id).Hide().Ignore
-
-                // New element
-                let elem = 
-                    dropElem newId label
-                    |>! Events.OnClick (fun el _ ->                         
-                        removeElem el id
-                    )
-                    
-                dropPanel.Append elem
-                resList := (id, value) :: resList.Value
-                update ()
-            
-            // Drop
-            let dropCnf = {
-                accept = "." + dragClass
-                drop = fun (ev,d) ->  
-                    // TODO: fix jQuery
-                    addItem <| (string <| d.draggable.Attr("id"))
-            }
-            
-            let reset () =
-                for id in ids do
-                    JQuery.Of("#" + id).Show().Ignore
-                    resList := []
-                    dropPanel.Clear()
-                    List.iter addItem initials
-                    update ()
-
-
-            let droppable = 
-                JQueryUI.Droppable.New(dropPanel, unbox box dropCnf)            
-            
-            
-            let body =
-                Div (GetClass dc.DragContainerClass) -< draggables -< [droppable]
-                |>! OnAfterRender (fun _ -> 
-                    reset ()
-                )
-            
-            let dragPanel = Div (GetClass dc.DragContainerClass) -< draggables
-            
-            let leftBody = Layout.Body.New dragPanel None
-            let rightBody = Layout.Body.New dropPanel None
-            let left = Reactive.Return <| Tree.Edit.Left (Tree.Edit.Replace <| Tree.Leaf leftBody)          
-            let right = Reactive.Return <| Tree.Edit.Right(Tree.Edit.Replace <| Tree.Leaf rightBody)          
-            let body = Reactive.Merge left right
-            {
-                Body = body
-                Notify = fun _ -> reset ()
-                Dispose = ignore
-                State = state
-            }
+//    [<JavaScript>]
+//    let DragAndDrop (dc: DragAndDropConfig) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
+//        Formlet.New <| fun () ->
+//            
+//            let resList = ref []
+//            let state = State<_>.New()
+//
+//
+//            let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
+//            
+//            let dragClass =
+//                match dc.DraggableClass with
+//                | Some v    -> v
+//                | None      -> "draggableItem"
+//            
+//            let dragElem id label =     
+//                Span (GetStyle dc.DraggableStyle)
+//                -<
+//                [Attr.Class dragClass]
+//                -< 
+//                [Attr.Id id] 
+//                -< [Text label]
+//                            
+//            let dropElem id label =
+//                Span (GetStyle dc.DroppableStyle)
+//                -<
+//                (GetClass dc.DroppableClass) 
+//                -< 
+//                [Attr.Id id] 
+//                -< [Text label]
+//            
+//            // Drag
+//            let dragCnf = JQueryUI.DraggableConfiguration()
+//            dragCnf.Helper <- "clone"
+//            
+//            let idDrs =
+//                vs
+//                |> List.map (fun (label, value, added)  ->
+//                    let id = NewId ()
+//                    dict.[id] <- (label, value)
+//                    let elem = dragElem id label
+//                    id , JQueryUI.Draggable.New(elem, dragCnf)  , added 
+//                )
+//            let ids = List.map (fun (x,_,_) -> x) idDrs
+//            let draggables = List.map (fun (_,y,_) -> y) idDrs
+//            let initials = List.choose (fun (id,_,add) -> if add then Some id else None) idDrs
+//
+//            let dropPanel = 
+//                Div (GetClass dc.DropContainerClass)
+//            
+//            let update () =
+//                resList.Value
+//                |> List.rev
+//                |> List.map (fun (_, x) -> x)
+//                |> Success
+//                |> state.Trigger
+//            
+//            let removeElem (el: Element) id =
+//                el.Remove()
+//                resList := (List.filter (fun (elId, _) -> elId <> id) resList.Value)
+//                if not dc.AcceptMany then
+//                    JQuery.Of("#" + id).Show().Ignore
+//                update ()
+//                            
+//            let addItem id =
+//                let (label, value) = dict.[id]
+//                let newId = NewId ()
+//                if not dc.AcceptMany then
+//                    JQuery.Of("#" + id).Hide().Ignore
+//
+//                // New element
+//                let elem = 
+//                    dropElem newId label
+//                    |>! Events.OnClick (fun el _ ->
+//                        removeElem el id
+//                    )
+//                    
+//                dropPanel.Append elem
+//                resList := (id, value) :: resList.Value
+//                update ()
+//            
+//            // Drop
+//            let dropCnf = {
+//                accept = "." + dragClass
+//                drop = fun (ev,d) ->  
+//                    // TODO: fix jQuery
+//                    addItem <| (string <| d.draggable.Attr("id"))
+//            }
+//            
+//            let reset () =
+//                for id in ids do
+//                    JQuery.Of("#" + id).Show().Ignore
+//                    resList := []
+//                    dropPanel.Clear()
+//                    List.iter addItem initials
+//                    update ()
+//
+//
+//            let droppable = 
+//                JQueryUI.Droppable.New(dropPanel, unbox box dropCnf)
+//            
+//            
+//            let body =
+//                Div (GetClass dc.DragContainerClass) -< draggables -< [droppable]
+//                |>! OnAfterRender (fun _ -> 
+//                    reset ()
+//                )
+//            
+//            let dragPanel = Div (GetClass dc.DragContainerClass) -< draggables
+//            
+//            
+//            let leftBody = Layout.Body.New dragPanel None
+//            let rightBody = Layout.Body.New dropPanel None
+//
+//            
+//            let left = Reactive.Return <| Tree.Edit.Left (Tree.Edit.Replace <| Tree.Leaf leftBody)
+//            let right = Reactive.Return <| Tree.Edit.Right(Tree.Edit.Replace <| Tree.Leaf rightBody)
+//            let body = Reactive.Merge left right
+//            {
+//                Body = body
+//                Notify = fun _ -> reset ()
+//                Dispose = ignore
+//                State = state
+//            }
