@@ -14,6 +14,7 @@ module Enhance =
         Enhance.WithSubmitFormlet formlet (fun res ->
             match res with
             | Result.Success _ -> 
+                Log "Success"
                 JQueryUI.Controls.Button label
             | Result.Failure _ ->
                 let conf = JQueryUI.ButtonConfiguration(Label = label)
@@ -28,7 +29,8 @@ module Enhance =
 
     [<JavaScript>]
     let WithSubmitAndResetButtons (submitLabel: string) (resetLabel: string) (formlet: Formlet<'T>) : Formlet<'T> =
-        let submitReset (reset : obj -> unit) (result : Result<'T>) : Formlet<'T> =            
+        let submitReset (reset : obj -> unit) (result : Result<'T>) : Formlet<'T> =
+            
             let submit : Formlet<'T> =
                 match result with
                 | Success (value: 'T) -> 
@@ -39,6 +41,7 @@ module Enhance =
                     conf.Disabled <- true
                     JQueryUI.Controls.CustomButton conf
                     |> Formlet.MapResult (fun _ -> Failure fs)
+            
             let reset =
                 Formlet.Do {
                     let! res = Formlet.LiftResult (JQueryUI.Controls.Button resetLabel)
@@ -51,7 +54,7 @@ module Enhance =
                 }
             (
                 Formlet.Return (fun v _ -> v)
-                <*> submit            
+                <*> submit
                 <*> reset
             )            
             |> Formlet.Horizontal

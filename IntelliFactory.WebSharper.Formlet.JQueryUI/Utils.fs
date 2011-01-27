@@ -16,7 +16,7 @@ module Temp =
 
 module internal Utils =
 
-    [<Inline "windows.alert($x)">]    
+    [<Inline "windows.alert($x)">]
     let Alert x = ()
     
     [<JavaScript>]
