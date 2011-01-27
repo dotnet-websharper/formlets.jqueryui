@@ -12,13 +12,7 @@ module Sample =
 
     [<JavaScript>]
     let Main () = 
-        // Controls.Input "Hello"
-        [
-            "Apa"
-            "Beta"
-            "Zeta"
-        ]
-        |> JQueryUI.Controls.Autocomplete "" 
+        Tests.TestAccordionChoose ()
 
 type SampleControl() =
     inherit Web.Control()

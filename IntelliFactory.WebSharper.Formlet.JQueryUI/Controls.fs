@@ -20,7 +20,6 @@ module Controls =
     [<JavaScript>]
     let CustomButton (conf : JQueryUI.ButtonConfiguration) =
         MkFormlet <| fun () ->
-            
             let state = State<int>.New()
             let count = ref 0
             let button = JQueryUI.Button.New conf
@@ -75,7 +74,7 @@ module Controls =
 
 
 
-    [<Inline "jQuery($acc.element.el).accordion('option','active')">]
+    [<Inline "jQuery($acc).accordion('option','active')">]
     let private ActiveAccordionIndex acc = 0
     
     /// Constructs an Accordion formlet, displaying the given list of formlets on separate tabs.
@@ -91,35 +90,42 @@ module Controls =
                     l, (Reactive.Heat form.State), form.Notify, elem
                 )
                 |> Array.ofList
-            
-            let accordion =
+
+            let rec state = Event<_>()
+
+            and accordion =
                 fs
                 |> Array.map (fun (label, _, _, elem) -> label , elem)
                 |> List.ofArray
                 |> JQueryUI.Accordion.New
-            
-            
-            let state = Event<_>()
-            let update index =
+                |>! OnAfterRender (fun acc ->
+                    update 0
+                    acc.Activate 0
+                )
+            and update index =
                 let (_, s, _, _) = fs.[index]
                 state.Trigger s
-                
-            // Update on tab select
-            // OnSelectA accordion update
-            accordion.OnChange (fun ev _->
-                update <| ActiveAccordionIndex accordion
-            )
-                
-            let reset () =
+                            
+            and reset () =
                 fs |> Array.iter (fun (_,_,n,_) -> n null)
                 accordion.Activate 0
                 update 0
 
-            // Initialize reset
-            let accordion = accordion |>! OnAfterRender (fun _ -> reset ())
-            accordion, reset , Reactive.Switch state.Publish
+            // Update on tab select
+            // OnSelectA accordion update
+            accordion.OnChange (fun ev _->
+                (accordion :> IPagelet).Body
+                |> ActiveAccordionIndex
+                |> update
+            )
 
-    
+            // State
+            let state = 
+                Reactive.Switch state.Publish
+
+            accordion, reset , state
+
+
     /// ...
     [<JavaScript>]
     let Autocomplete def (source: list<string>) : Formlet<string> =
@@ -440,127 +446,133 @@ module Controls =
         | Some v    -> [Attr.Style v]
         | None      -> []
     
-//    [<JavaScript>]
-//    let DragAndDrop (dc: DragAndDropConfig) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
-//        Formlet.New <| fun () ->
-//            
-//            let resList = ref []
-//            let state = State<_>.New()
-//
-//
-//            let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
-//            
-//            let dragClass =
-//                match dc.DraggableClass with
-//                | Some v    -> v
-//                | None      -> "draggableItem"
-//            
-//            let dragElem id label =     
-//                Span (GetStyle dc.DraggableStyle)
-//                -<
-//                [Attr.Class dragClass]
-//                -< 
-//                [Attr.Id id] 
-//                -< [Text label]
-//                            
-//            let dropElem id label =
-//                Span (GetStyle dc.DroppableStyle)
-//                -<
-//                (GetClass dc.DroppableClass) 
-//                -< 
-//                [Attr.Id id] 
-//                -< [Text label]
-//            
-//            // Drag
-//            let dragCnf = JQueryUI.DraggableConfiguration()
-//            dragCnf.Helper <- "clone"
-//            
-//            let idDrs =
-//                vs
-//                |> List.map (fun (label, value, added)  ->
-//                    let id = NewId ()
-//                    dict.[id] <- (label, value)
-//                    let elem = dragElem id label
-//                    id , JQueryUI.Draggable.New(elem, dragCnf)  , added 
-//                )
-//            let ids = List.map (fun (x,_,_) -> x) idDrs
-//            let draggables = List.map (fun (_,y,_) -> y) idDrs
-//            let initials = List.choose (fun (id,_,add) -> if add then Some id else None) idDrs
-//
-//            let dropPanel = 
-//                Div (GetClass dc.DropContainerClass)
-//            
-//            let update () =
-//                resList.Value
-//                |> List.rev
-//                |> List.map (fun (_, x) -> x)
-//                |> Success
-//                |> state.Trigger
-//            
-//            let removeElem (el: Element) id =
-//                el.Remove()
-//                resList := (List.filter (fun (elId, _) -> elId <> id) resList.Value)
-//                if not dc.AcceptMany then
-//                    JQuery.Of("#" + id).Show().Ignore
-//                update ()
-//                            
-//            let addItem id =
-//                let (label, value) = dict.[id]
-//                let newId = NewId ()
-//                if not dc.AcceptMany then
-//                    JQuery.Of("#" + id).Hide().Ignore
-//
-//                // New element
-//                let elem = 
-//                    dropElem newId label
-//                    |>! Events.OnClick (fun el _ ->
-//                        removeElem el id
-//                    )
-//                    
-//                dropPanel.Append elem
-//                resList := (id, value) :: resList.Value
-//                update ()
-//            
-//            // Drop
-//            let dropCnf = {
-//                accept = "." + dragClass
-//                drop = fun (ev,d) ->  
-//                    // TODO: fix jQuery
-//                    addItem <| (string <| d.draggable.Attr("id"))
-//            }
-//            
-//            let reset () =
-//                for id in ids do
-//                    JQuery.Of("#" + id).Show().Ignore
-//                    resList := []
-//                    dropPanel.Clear()
-//                    List.iter addItem initials
-//                    update ()
-//
-//
-//            let droppable = 
-//                JQueryUI.Droppable.New(dropPanel, unbox box dropCnf)
-//            
-//            
-//            let body =
-//                Div (GetClass dc.DragContainerClass) -< draggables -< [droppable]
-//                |>! OnAfterRender (fun _ -> 
-//                    reset ()
-//                )
-//            
-//            let dragPanel = Div (GetClass dc.DragContainerClass) -< draggables
-//            
-//            
-//            let leftBody = Layout.Body.New dragPanel None
-//            let rightBody = Layout.Body.New dropPanel None
-//
-//            
-//            let left = Reactive.Return <| Tree.Edit.Left (Tree.Edit.Replace <| Tree.Leaf leftBody)
-//            let right = Reactive.Return <| Tree.Edit.Right(Tree.Edit.Replace <| Tree.Leaf rightBody)
-//            let body = Reactive.Merge left right
-//            {
-//                Body = body
-//                Notify = fun _ -> reset ()
-//                Dispose = ignore
-//                State = state
-//            }
+    [<JavaScript>]
+    let DragAndDrop (dc: DragAndDropConfig) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
+        Formlet.New <| fun () ->
+            
+            let resList = ref []
+            let state = State<_>.New()
+
+
+            let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
+            
+            let dragClass =
+                match dc.DraggableClass with
+                | Some v    -> v
+                | None      -> "draggableItem"
+            
+            let dragElem id label =     
+                Span (GetStyle dc.DraggableStyle)
+                -<
+                [Attr.Class dragClass]
+                -< 
+                [Attr.Id id] 
+                -< [Text label]
+
+            let dropElem id label =
+                Span (GetStyle dc.DroppableStyle)
+                -<
+                (GetClass dc.DroppableClass) 
+                -< 
+                [Attr.Id id] 
+                -< [Text label]
+
+            // Drag
+            let dragCnf = JQueryUI.DraggableConfiguration()
+            dragCnf.Helper <- "clone"
+            
+            let idDrs =
+                vs
+                |> List.map (fun (label, value, added)  ->
+                    let id = NewId ()
+                    dict.[id] <- (label, value)
+                    let elem = dragElem id label
+                    id , JQueryUI.Draggable.New(elem, dragCnf)  , added 
+                )
+            let ids = List.map (fun (x,_,_) -> x) idDrs
+            let draggables = List.map (fun (_,y,_) -> y) idDrs
+            let initials = List.choose (fun (id,_,add) -> if add then Some id else None) idDrs
+
+            let dropPanel = 
+                Div (GetClass dc.DropContainerClass)
+            
+            let update () =
+                resList.Value
+                |> List.rev
+                |> List.map (fun (_, x) -> x)
+                |> Success
+                |> state.Trigger
+            
+            let removeElem (el: Element) id =
+                el.Remove()
+                resList := (List.filter (fun (elId, _) -> elId <> id) resList.Value)
+                if not dc.AcceptMany then
+                    JQuery.Of("#" + id).Show().Ignore
+                update ()
+                            
+            let addItem id =
+                let (label, value) = dict.[id]
+                let newId = NewId ()
+                if not dc.AcceptMany then
+                    JQuery.Of("#" + id).Hide().Ignore
+
+                // New element
+                let elem = 
+                    dropElem newId label
+                    |>! Events.OnClick (fun el _ ->
+                        removeElem el id
+                    )
+                    
+                dropPanel.Append elem
+                resList := (id, value) :: resList.Value
+                update ()
+            
+            // Drop
+            let dropCnf = {
+                accept = "." + dragClass
+                drop = fun (ev,d) ->  
+                    // TODO: fix jQuery
+                    addItem <| (string <| d.draggable.Attr("id"))
+            }
+            
+            let reset () =
+                for id in ids do
+                    JQuery.Of("#" + id).Show().Ignore
+                    resList := []
+                    dropPanel.Clear()
+                    List.iter addItem initials
+                    update ()
+
+
+            let droppable = 
+                JQueryUI.Droppable.New(dropPanel, unbox box dropCnf)
+            
+            
+            let body =
+                Div (GetClass dc.DragContainerClass) -< draggables -< [droppable]
+                |>! OnAfterRender (fun _ -> 
+                    reset ()
+                )
+            
+            let dragPanel = Div (GetClass dc.DragContainerClass) -< draggables
+
+            let leftBody = {Element = dropPanel; Label = None}
+            let rightBody = {Element = dropPanel; Label = None}
+
+            let left = 
+                Tree.Leaf leftBody
+                |> Tree.Edit.Replace
+                |> Reactive.Return
+
+            let right = 
+                Tree.Leaf rightBody
+                |> Tree.Edit.Replace
+                |> Reactive.Return
+
+            let body = Reactive.Merge left right
+            {
+                Body = body
+                Notify = fun _ -> reset ()
+                Dispose = ignore
+                State = state
+            }
