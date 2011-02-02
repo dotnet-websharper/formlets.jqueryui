@@ -52,8 +52,6 @@ module internal Utils =
                     )
                 disp
 
-
-
         [<JavaScript>]
         member this.Trigger(v) =
             this.Event.Trigger v

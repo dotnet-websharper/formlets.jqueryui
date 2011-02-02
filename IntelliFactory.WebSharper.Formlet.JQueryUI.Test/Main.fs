@@ -8,15 +8,10 @@ open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Formlet
 open IntelliFactory.WebSharper.Formlet.JQueryUI
 
-module Sample =
-
-    [<JavaScript>]
-    let Main () = 
-        Tests.TestAccordionChoose ()
 
 type SampleControl() =
     inherit Web.Control()
 
     [<JavaScript>]
     override this.Body =
-        Div [Sample.Main ()] :> _
+        Div [Tests.Foo ()] :> _
