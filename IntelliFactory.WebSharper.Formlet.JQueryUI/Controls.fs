@@ -9,7 +9,6 @@ open IntelliFactory.WebSharper.JQuery
 open Utils
 
 module Controls =
-    
 
     [<JavaScript>]
     let private Reactive = IntelliFactory.Reactive.Reactive.Default
@@ -128,7 +127,7 @@ module Controls =
 
     /// ...
     [<JavaScript>]
-    let Autocomplete def (source: list<string>) : Formlet<string> =
+    let Autocomplete def (source: seq<string>) : Formlet<string> =
         MkFormlet <| fun () ->
             let state = State<string>.New(def)
             let input = 
@@ -140,7 +139,7 @@ module Controls =
                 JQueryUI.Autocomplete.New(
                     input , 
                     JQueryUI.AutocompleteConfiguration(
-                        Source = Array.ofList source
+                        Source = Array.ofSeq source
                     )
                 )
             let reset () =
@@ -447,12 +446,15 @@ module Controls =
         | None      -> []
     
     [<JavaScript>]
-    let DragAndDrop (dc: DragAndDropConfig) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
-        Formlet.New <| fun () ->
-            
+    let DragAndDrop (dc:option<DragAndDropConfig>) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
+        MkFormlet <| fun () ->
+            let dc =
+                match dc with
+                | Some dc   -> dc
+                | None      -> DragAndDropConfig.Default
+
             let resList = ref []
             let state = State<_>.New()
-
 
             let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
             
@@ -461,21 +463,15 @@ module Controls =
                 | Some v    -> v
                 | None      -> "draggableItem"
             
-            let dragElem id label =     
-                Span (GetStyle dc.DraggableStyle)
-                -<
-                [Attr.Class dragClass]
-                -< 
-                [Attr.Id id] 
-                -< [Text label]
+            let dragElem id label =
+                Span (GetStyle dc.DraggableStyle) -<
+                [Attr.Class dragClass] -< 
+                [Attr.Id id] -< [Text label]
 
             let dropElem id label =
-                Span (GetStyle dc.DroppableStyle)
-                -<
-                (GetClass dc.DroppableClass) 
-                -< 
-                [Attr.Id id] 
-                -< [Text label]
+                Span (GetStyle dc.DroppableStyle) -<
+                (GetClass dc.DroppableClass) -< 
+                [Attr.Id id] -< [Text label]
 
             // Drag
             let dragCnf = JQueryUI.DraggableConfiguration()
@@ -494,22 +490,24 @@ module Controls =
             let initials = List.choose (fun (id,_,add) -> if add then Some id else None) idDrs
 
             let dropPanel = 
-                Div (GetClass dc.DropContainerClass)
-            
+                Div (GetClass dc.DropContainerClass) -< 
+                (GetStyle dc.DropContainerStyle) -<
+                (GetStyle dc.DropContainerStyle)
+
             let update () =
                 resList.Value
                 |> List.rev
                 |> List.map (fun (_, x) -> x)
                 |> Success
                 |> state.Trigger
-            
+
             let removeElem (el: Element) id =
                 el.Remove()
                 resList := (List.filter (fun (elId, _) -> elId <> id) resList.Value)
                 if not dc.AcceptMany then
                     JQuery.Of("#" + id).Show().Ignore
                 update ()
-                            
+
             let addItem id =
                 let (label, value) = dict.[id]
                 let newId = NewId ()
@@ -547,32 +545,15 @@ module Controls =
             let droppable = 
                 JQueryUI.Droppable.New(dropPanel, unbox box dropCnf)
             
-            
+            // Drag Panel
+            let dragPanel =
+                Div (GetClass dc.DragContainerClass) -< 
+                (GetStyle dc.DragContainerStyle) -<
+                draggables
+
             let body =
-                Div (GetClass dc.DragContainerClass) -< draggables -< [droppable]
+                Div  [dragPanel; dropPanel]
                 |>! OnAfterRender (fun _ -> 
                     reset ()
                 )
-            
-            let dragPanel = Div (GetClass dc.DragContainerClass) -< draggables
-
-            let leftBody = {Element = dropPanel; Label = None}
-            let rightBody = {Element = dropPanel; Label = None}
-
-            let left = 
-                Tree.Leaf leftBody
-                |> Tree.Edit.Replace
-                |> Reactive.Return
-
-            let right = 
-                Tree.Leaf rightBody
-                |> Tree.Edit.Replace
-                |> Reactive.Return
-
-            let body = Reactive.Merge left right
-            {
-                Body = body
-                Notify = fun _ -> reset ()
-                Dispose = ignore
-                State = state
-            }
+            body, reset, state
