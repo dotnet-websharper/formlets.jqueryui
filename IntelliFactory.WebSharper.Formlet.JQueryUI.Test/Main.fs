@@ -14,4 +14,4 @@ type SampleControl() =
 
     [<JavaScript>]
     override this.Body =
-        Div [Tests.Foo ()] :> _
+        Tests.Foo () :> _

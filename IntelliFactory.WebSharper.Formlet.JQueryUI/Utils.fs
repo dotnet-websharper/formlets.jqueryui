@@ -23,7 +23,9 @@ module internal Utils =
     let MkFormlet f =
         Formlet.BuildFormlet <| fun () ->
             let b, r, s = f ()
-            Span [b], r, s
+            let panel =
+                Div [Attr.Style "padding:10px"] -< [b]
+            panel, r, s
 
     [<JavaScript>]
     let FormAndElement formlet =
@@ -39,7 +41,7 @@ module internal Utils =
         internal 
             {
                 Initial : Result<'T>
-                Event : Event<Result<'T>>
+                Event   : Event<Result<'T>>
             }
         interface IObservable<Result<'T>> with
             
