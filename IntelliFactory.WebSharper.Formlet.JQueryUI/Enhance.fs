@@ -11,17 +11,40 @@ open Utils
 module Enhance =
     [<JavaScript>]
     let WithSubmitButton (label: string) (formlet: Formlet<'T>) : Formlet<'T> =
-        Enhance.WithSubmitFormlet formlet (fun res ->
-            match res with
-            | Result.Success _ -> 
-                Log "Success"
-                JQueryUI.Controls.Button label
-            | Result.Failure _ ->
-                let conf = JQueryUI.ButtonConfiguration(Label = label)
-                conf.Disabled <- true
-                JQueryUI.Controls.CustomButton conf
-            |> Formlet.Map ignore
-        )
+        Formlet.Do {
+            let! res = 
+                formlet
+                |> Formlet.LiftResult
+                |> Formlet.InitWith (Result.Failure [])
+            let count = ref 0
+            let! value =
+                match res with
+                | Result.Success x ->
+                    Formlet.Do {
+                        incr count
+                        let! _ = 
+                            JQueryUI.Controls.Button (string count.Value)
+                        return x
+                    }
+                | Result.Failure _ ->
+                    Formlet.Do {
+                        let! _ = JQueryUI.Controls.Button "Disabled"
+                        return! Formlet.Never ()
+                    }
+            return value
+        }
+//        Enhance.WithSubmitFormlet formlet (fun res ->
+//            match res with
+//            | Result.Success _ -> 
+//                Log "Success"
+//                JQueryUI.Controls.Button label
+//            | Result.Failure _ ->
+//                let conf = JQueryUI.ButtonConfiguration(Label = label)
+//                conf.Disabled <- true
+//                // JQueryUI.Controls.CustomButton conf
+//                JQueryUI.Controls.Button "BLA"
+//            |> Formlet.Map ignore
+//        )
 
     [<JavaScript>]
     let WithResetButton (label: string) (formlet: Formlet<'T>) : Formlet<'T> =

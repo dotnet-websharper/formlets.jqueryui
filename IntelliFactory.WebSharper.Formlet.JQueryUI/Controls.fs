@@ -21,7 +21,17 @@ module Controls =
         MkFormlet <| fun () ->
             let state = State<int>.New()
             let count = ref 0
-            let button = JQueryUI.Button.New conf
+            let button = 
+                let genEl () = Button[Text conf.Label]
+                JQueryUI.Button.New(genEl, conf)
+            // Make sure to try to render the button
+            try
+                (button :> IPagelet).Render()
+            with
+            | _ -> 
+                Log "failed to render"
+                ()
+
             button.OnClick(fun _ ->
                 state.Trigger (Success count.Value)
                 incr count
@@ -30,7 +40,6 @@ module Controls =
                 count := 0
             button , reset, state
 
-
     /// Constructs a button formlet with a label. The integer value of the formlet
     /// indicates the number of clicks. The value 0 is triggered the first time
     /// the button is clicked.
@@ -38,6 +47,24 @@ module Controls =
     let Button (label : string) =
         JQueryUI.ButtonConfiguration(Label = label)
         |> CustomButton
+
+    [<JavaScript>]
+    let Dialog (genEl : unit -> Element) : Formlet<unit> =
+        MkFormlet <| fun _ ->
+            let state = new Event<_>()
+            let dialog =
+                JQueryUI.Dialog.New(genEl ())
+            dialog.OnClose (fun _ ->
+                state.Trigger (Result.Success ())
+            )
+            dialog.Enable ()
+            dialog.Open ()
+
+            let reset () =
+                dialog.Close ()
+                state.Trigger (Result.Failure [])
+
+            Div [dialog], reset , state.Publish
 
     /// Constructs an Accordion formlet, displaying the given list of formlets on separate tabs.
     [<JavaScript>]
@@ -239,7 +266,7 @@ module Controls =
 
             let slider = JQueryUI.Slider.New(unbox (box conf))
             let state = State<_>.New()
-            slider.OnChange(fun _ ->                
+            slider.OnChange(fun _ ->
                 state.Trigger (Success slider.Value)
             )
             let reset () =
@@ -251,7 +278,7 @@ module Controls =
                 |>! OnAfterRender (fun _ -> 
                     reset ()
                 )
-            slider, reset, state     
+            slider, reset, state
             
     open System
     

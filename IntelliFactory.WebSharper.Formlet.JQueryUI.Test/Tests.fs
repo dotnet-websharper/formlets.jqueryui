@@ -12,20 +12,18 @@ module Tests =
 
     [<JavaScript>]
     let Inspect (formlet: Formlet<'T>)  =
-        formlet
-        |> Formlet.Map ignore
-//        Formlet.Do {
-//            let! value = 
-//                formlet
-//                |> Formlet.Map (fun x -> string (box x))
-//                |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
-//            return!
-//                Formlet.OfElement (fun _ ->
-//                    Div [Attr.Style "margin-top: 10px;padding:10px; border: 1px dotted #cccccc;"] -< [
-//                        Text value
-//                    ]
-//                )
-//        }
+        Formlet.Do {
+            let! value = 
+                formlet
+                |> Formlet.Map (fun x -> string (box x))
+                |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+            return!
+                Formlet.OfElement (fun _ ->
+                    Div [Attr.Style "margin-top: 10px;padding:10px; border: 1px dotted #cccccc;"] -< [
+                        Text value
+                    ]
+                )
+        }
         
 
 
@@ -35,14 +33,20 @@ module Tests =
         let f =
             Controls.Button "Button"
             |> Formlet.Map string
-            |>! OnAfterRender (fun f ->
-                Log "after render"
-            )
         [
             "Number 2", Controls.TextArea ""
             "Number 1", f
             "Number 3", Controls.Input ""
         ]
+        |> List.map (fun (l, f) ->
+            let f  = 
+                f 
+                |> Formlet.MapElement (fun el ->
+                    Div [Attr.Style "width: 400px"] -< [el]
+                )
+            
+            l,f
+        )
         |> Controls.AccordionChoose
 
     // TESTED
@@ -54,13 +58,16 @@ module Tests =
             "Number 3", Controls.Input ""
         ]
         |> Controls.AccordionList
+        |> Formlet.Map (fun xs ->
+            List.fold (fun x y-> x + "," + y) "" xs
+        )
 
     [<JavaScript>]
     let TestButton =
         Formlet.Do {
             let! _ = Controls.Button "Click Me"
-            let _ = JQueryUI.Dialog.New(Div [Text "Clicked"])
-            return ()
+            let! _ = Controls.Dialog (fun _ -> Div [Text "Viva Espana!"])
+            return "Done"
         }
 
     [<JavaScript>]
@@ -79,6 +86,7 @@ module Tests =
             { Controls.SliderConfiguration.Default with
                 Min = 20
                 Max = 30
+                Width = Some 500
                 Orientation = Controls.Orientation.Vertical
             }
         Controls.Slider (Some conf)
@@ -91,6 +99,9 @@ module Tests =
             Controls.Input "C"
         ]
         |> Controls.Sortable
+        |> Formlet.Map (fun xs ->
+            List.fold (fun x y-> x + "," + y) "" xs
+        )
 
     [<JavaScript>]
     let TestTabsList =
@@ -100,6 +111,9 @@ module Tests =
             "Tab 3", Controls.TextArea ""
         ]
         |> Controls.TabsList
+        |> Formlet.Map (fun xs ->
+            List.fold (fun x y-> x + "," + y) "" xs
+        )
 
     [<JavaScript>]
     let TestTabsChoose =
@@ -108,7 +122,7 @@ module Tests =
             "Tab 2", Controls.TextArea ""
             "Tab 3", Controls.TextArea ""
         ]
-        |> Controls.TabsList
+        |> Controls.TabsChoose
 
     [<JavaScript>]
     let TestDragAndDrop =
@@ -129,6 +143,9 @@ module Tests =
             "Item 3", 3, true
         ]
         |> Controls.DragAndDrop (Some conf)
+        |> Formlet.Map (fun xs ->
+            List.fold (fun x y-> string x + "," + string y) "" xs
+        )
 
     [<JavaScript>]
     let TestComposed =
@@ -169,6 +186,38 @@ module Tests =
         |> Enhance.WithRowConfiguration rowConf
         |> Enhance.WithCustomSubmitButton Enhance.FormButtonConfiguration.Default
         |> Enhance.WithFormContainer
+
+    [<JavaScript>]
+    let TestComposedSimple =
+        let name =
+            TestAutocomplete
+            |> Validator.IsNotEmpty "Not empty"
+            |> Enhance.WithValidationIcon
+            |> Enhance.WithTextLabel "Name"
+        let date =
+            Controls.Datepicker None
+            |> Enhance.WithTextLabel "Date"
+        (
+            Formlet.Yield (fun n d -> ())
+            <*> name
+            <*> date        )
+
+    [<JavaScript>]
+    let TestWithButton =
+        Formlet.Do {
+            let! x = Controls.Button "click"
+            return! Formlet.OfElement (fun _ -> Div [Text "HOHO"])
+        }
+        |> Enhance.WithSubmitButton "GO"
+
+    [<JavaScript>]
+    let TestNotInitButton =
+        Formlet.Do {
+            let! _ = Controls.Button "First"
+            let! x = Controls.Slider None
+            let! _ = Controls.Button "Click"
+            return ()
+        }
 
     [<JavaScript>]
     let Foo () =
