@@ -6,13 +6,39 @@ open IntelliFactory.WebSharper.Formlet
 open IntelliFactory.Formlet.Base
 open System
 
-[<AutoOpen>]
-module Temp =
-    [<JavaScript>]
-    let (|>!) x f = f x ; x
 
-    [<Inline "console.log($x)">]
-    let Log x = ()
+module CssConstants =
+    
+    [<JavaScript>]
+    let ValidIconClass = "validIcon ui-icon ui-icon-check"
+
+    [<JavaScript>]
+    let ErrorIconClass = "errorIcon icon ui-icon ui-icon-alert"
+    
+    [<JavaScript>]
+    let AddIconClass = "addIcon ui-icon ui-icon-circle-plus"
+
+    [<JavaScript>]
+    let RemIconClass = "removeIcon ui-icon ui-icon-circle-minus"
+
+    [<JavaScript>]
+    let LegendClass = "ui-widget-content ui-corner-all"
+
+    [<JavaScript>]
+    let FormContainerClass = "formlet-jqueryui"
+
+    [<JavaScript>]
+    let DropContainerClass = "dropContainer"
+
+    [<JavaScript>]
+    let DragContainerClass = "dragContainer"
+
+    [<JavaScript>]
+    let DraggableClass = "draggableItem"
+
+    [<JavaScript>]
+    let DroppableClass = "droppableItem"
+
 
 module internal Utils =
 
@@ -24,7 +50,7 @@ module internal Utils =
         Formlet.BuildFormlet <| fun () ->
             let b, r, s = f ()
             let panel =
-                Div [Attr.Style "padding:10px"] -< [b]
+                Div [b]
             panel, r, s
 
     [<JavaScript>]

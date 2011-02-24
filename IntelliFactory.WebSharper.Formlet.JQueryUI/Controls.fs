@@ -10,6 +10,8 @@ open Utils
 
 module Controls =
 
+    module CC = IntelliFactory.WebSharper.Formlet.JQueryUI.CssConstants
+
     [<JavaScript>]
     let private Reactive = IntelliFactory.Reactive.Reactive.Default
 
@@ -29,7 +31,6 @@ module Controls =
                 (button :> IPagelet).Render()
             with
             | _ -> 
-                Log "failed to render"
                 ()
 
             button.OnClick(fun _ ->
@@ -38,6 +39,7 @@ module Controls =
             )
             let reset () =
                 count := 0
+                state.Trigger (Failure [])
             button , reset, state
 
     /// Constructs a button formlet with a label. The integer value of the formlet
@@ -152,15 +154,24 @@ module Controls =
             accordion, reset , state
 
 
-    /// ...
     [<JavaScript>]
     let Autocomplete def (source: seq<string>) : Formlet<string> =
         MkFormlet <| fun () ->
             let state = State<string>.New(def)
             let input = 
                 let i = Input [Text def]
+                let upd () = state.Trigger (Success i.Value)
                 i |>! Events.OnKeyUp (fun el _ ->
-                    state.Trigger (Success i.Value)
+                    upd ()
+                )
+                |>! Events.OnMouseOut (fun  el _ ->
+                    upd ()
+                )
+                |>! Events.OnChange (fun _ ->
+                    upd ()
+                )
+                |>! Events.OnMouseLeave (fun el _ ->
+                    upd ()
                 )
             let ac = 
                 JQueryUI.Autocomplete.New(
@@ -174,37 +185,44 @@ module Controls =
                 state.Trigger (Success def)
             ac, reset, state
 
-    
     [<JavaScript>]
-    let Datepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
+    let private DatepickerInput showCalendar (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
         MkFormlet <| fun () ->
-            let date = JQueryUI.Datepicker.New()
+            let date = 
+                if showCalendar then
+                    JQueryUI.Datepicker.New()
+                else
+                    JQueryUI.Datepicker.New(Input [])
             let defDate =
                 match def with
                 | Some d -> d
                 | None   -> new EcmaScript.Date ()
-                
-            Log ("defDate", defDate)
             let state = State<EcmaScript.Date   >.New()
             date.OnSelect (fun date ->
                 state.Trigger (Success date)
             )
 
             let reset () =
-                Log "Set date"
                 date.SetDate (unbox defDate)
                 match def with
                 | Some d -> 
-                    Log "Trigger default"
                     state.Trigger (Success d)
                 | None   -> 
                     state.Trigger (Failure [])
             date 
             |> OnAfterRender (fun _ ->
-                Log "OnAfter render - reset"
                 reset ()
             )            
             date, reset, state
+
+    [<JavaScript>]
+    let Datepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
+        DatepickerInput true def
+
+    [<JavaScript>]
+    let InputDatepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
+        DatepickerInput false def
+
 
 
     type Orientation =
@@ -282,10 +300,9 @@ module Controls =
             
     open System
     
-    [<Inline "jQuery($list.element.el).sortable('toArray')">]
+    [<Inline "jQuery($list.element.Body).sortable('toArray')">]
     let private ToArray list =  [||]
-    
-        
+
     type private C =
         {
             stop : JQuery -> unit
@@ -294,9 +311,7 @@ module Controls =
     [<JavaScript>]
     let Sortable (fs: List<Formlet<'T>>)  =
         Formlet.BuildFormlet <| fun () ->
-
             let dict = System.Collections.Generic.Dictionary<string,  IObservable<Result<'T>> >()
-            
             let stateEv = Event<list<string>>()
             let state =
                 Reactive.Select stateEv.Publish (fun ids -> 
@@ -417,8 +432,14 @@ module Controls =
                 tabs.Select 0
                 update 0
 
+
+            tabs.OnSelect (fun ev ui->
+                update ui.index
+            )
+
             // Initialize reset
-            let tabs = tabs |>! OnAfterRender (fun _ -> reset ())
+            let tabs = 
+                tabs |>! OnAfterRender (fun _ -> reset ())
             tabs, reset , Reactive.Switch state.Publish
 
     
@@ -435,31 +456,30 @@ module Controls =
     type DragAndDropConfig = 
         {
             AcceptMany : bool
-            DropContainerClass : option<string>
+            DropContainerClass : string
+            DragContainerClass : string
+            DroppableClass : string
+            DraggableClass : string
             DropContainerStyle : option<string>
-            DragContainerClass : option<string>
             DragContainerStyle : option<string>
-            DroppableClass : option<string>
             DroppableStyle : option<string>
-            DraggableClass : option<string>
             DraggableStyle : option<string>
-
         }
         with
             [<JavaScript>]
             static member Default =
                 {
                     AcceptMany = true
-                    DropContainerClass = None
-                    DropContainerStyle = None
-                    DragContainerClass = None
+                    DropContainerClass = CC.DropContainerClass
+                    DragContainerClass = CC.DragContainerClass
+                    DroppableClass = CC.DroppableClass
+                    DraggableClass = CC.DraggableClass
                     DragContainerStyle = None
-                    DroppableClass = None
                     DroppableStyle = None
-                    DraggableClass = None
                     DraggableStyle = None
+                    DropContainerStyle = None
                 }
-    
+
     [<JavaScript>]
     let private GetClass (c: option<string>) =
         match c with
@@ -471,6 +491,8 @@ module Controls =
         match c with
         | Some v    -> [Attr.Style v]
         | None      -> []
+    
+
     
     [<JavaScript>]
     let DragAndDrop (dc:option<DragAndDropConfig>) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
@@ -484,20 +506,15 @@ module Controls =
             let state = State<_>.New()
 
             let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
-            
-            let dragClass =
-                match dc.DraggableClass with
-                | Some v    -> v
-                | None      -> "draggableItem"
-            
+
             let dragElem id label =
                 Span (GetStyle dc.DraggableStyle) -<
-                [Attr.Class dragClass] -< 
+                [Attr.Class dc.DraggableClass] -< 
                 [Attr.Id id] -< [Text label]
 
             let dropElem id label =
                 Span (GetStyle dc.DroppableStyle) -<
-                (GetClass dc.DroppableClass) -< 
+                [Attr.Class dc.DroppableClass]-< 
                 [Attr.Id id] -< [Text label]
 
             // Drag
@@ -512,12 +529,13 @@ module Controls =
                     let elem = dragElem id label
                     id , JQueryUI.Draggable.New(elem, dragCnf)  , added 
                 )
+
             let ids = List.map (fun (x,_,_) -> x) idDrs
             let draggables = List.map (fun (_,y,_) -> y) idDrs
             let initials = List.choose (fun (id,_,add) -> if add then Some id else None) idDrs
 
             let dropPanel = 
-                Div (GetClass dc.DropContainerClass) -< 
+                Div [Attr.Class dc.DropContainerClass] -< 
                 (GetStyle dc.DropContainerStyle) -<
                 (GetStyle dc.DropContainerStyle)
 
@@ -528,38 +546,38 @@ module Controls =
                 |> Success
                 |> state.Trigger
 
-            let removeElem (el: Element) id =
-                el.Remove()
-                resList := (List.filter (fun (elId, _) -> elId <> id) resList.Value)
-                if not dc.AcceptMany then
-                    JQuery.Of("#" + id).Show().Ignore
-                update ()
-
             let addItem id =
                 let (label, value) = dict.[id]
                 let newId = NewId ()
+                
+                let isAdded = List.exists (fun (i, _) -> i = id) resList.Value
+
                 if not dc.AcceptMany then
                     JQuery.Of("#" + id).Hide().Ignore
 
-                // New element
-                let elem = 
-                    dropElem newId label
-                    |>! Events.OnClick (fun el _ ->
-                        removeElem el id
-                    )
-                    
-                dropPanel.Append elem
-                resList := (id, value) :: resList.Value
-                update ()
-            
+                // Not added or we accept many
+                if (not isAdded) || dc.AcceptMany then
+                    // New element
+                    let elem = 
+                        dropElem newId label
+                        |>! Events.OnClick (fun el _ ->
+                            el.Remove()
+                            resList := List.filter (fun (elId, _) -> elId <> newId) resList.Value
+                            if not dc.AcceptMany then
+                                JQuery.Of("#" + id).Show().Ignore
+                            update ()
+                        )
+                    dropPanel.Append elem
+                    resList := (newId, value) :: resList.Value
+                    update ()
+
             // Drop
             let dropCnf = {
-                accept = "." + dragClass
-                drop = fun (ev,d) ->  
-                    // TODO: fix jQuery
+                accept = "." + dc.DraggableClass
+                drop = fun (ev,d) ->
                     addItem <| (string <| d.draggable.Attr("id"))
             }
-            
+
             let reset () =
                 for id in ids do
                     JQuery.Of("#" + id).Show().Ignore
@@ -574,7 +592,7 @@ module Controls =
             
             // Drag Panel
             let dragPanel =
-                Div (GetClass dc.DragContainerClass) -< 
+                Div [Attr.Class dc.DragContainerClass] -< 
                 (GetStyle dc.DragContainerStyle) -<
                 draggables
 

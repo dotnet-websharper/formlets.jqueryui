@@ -4,13 +4,6 @@
 <head runat="server">
     <title>WebSharper Playground</title>
     <WebSharper:ScriptManager runat="server" />
-    <style type="text/css">
-        .formlet div 
-        {
-        	border : inherit;
-        	padding : inherit;
-        }
-    </style>
 </head>
 <body>
     <Sample:SampleControl runat="server" />
