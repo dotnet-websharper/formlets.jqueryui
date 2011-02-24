@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
+    <Content Include="Formlet.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

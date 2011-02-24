@@ -1,0 +1,127 @@
+﻿/* $begin{copyright}
+//
+// This file is confidential and proprietary.
+//
+// Copyright (c) IntelliFactory, 2004-2010.
+//
+// All rights reserved.  Reproduction or use in whole or in part is
+// prohibited without the written consent of the copyright holder.
+//-----------------------------------------------------------------
+// $end{copyright} */
+
+/************************************************************************
+* Containers
+************************************************************************/
+.formlet-jqueryui .dragContainer,
+.formlet-jqueryui .dropContainer,
+.formlet-jqueryui .draggableItem,
+.formlet-jqueryui .droppableItem
+{
+    -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;
+    margin : 5px;
+    border : 1px solid #AACFE4;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    border-top-left-radius: 4px 4px;
+    border-top-right-radius: 4px 4px;
+    border-bottom-right-radius: 4px 4px;
+    border-bottom-left-radius: 4px 4px;
+    padding : 10px;    
+}
+.formlet-jqueryui .draggableItem
+{
+	cursor: move;
+	padding : 5px;
+}
+.formlet-jqueryui .droppableItem
+{
+	cursor: crosshair;
+	padding : 5px;
+}
+
+.formlet-jqueryui fieldset
+{
+	margin-bottom : 10px;
+	margin-top : 10px;
+	border-width : 1px;
+	padding : 5px;
+}
+
+/************************************************************************
+* Html elements
+************************************************************************/
+.formlet-jqueryui table
+{
+	border-collapse : collapse;
+}
+
+.formlet-jqueryui table td
+{
+	vertical-align : middle;
+}
+
+/************************************************************************
+* Labels
+************************************************************************/
+.formlet-jqueryui label
+{
+	float:none;
+	display:block;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
+
+/************************************************************************
+* Input elements
+************************************************************************/
+
+.formlet-jqueryui input,
+.formlet-jqueryui input.inputPassword,
+.formlet-jqueryui input.inputText,
+.formlet-jqueryui select,
+.formlet-jqueryui textarea
+{
+	padding : 4px;
+	margin : 5px;
+	border:solid 1px #aacfe4;
+	width:250px;
+	display: block;
+}
+
+.formlet-jqueryui select
+{
+	width : 260px;
+}
+
+.formlet-jqueryui input.inputRadio ,
+.formlet-jqueryui input.inputCheckbox {
+	margin:5px;
+	display : block;
+	padding : 0;
+}
+
+.formlet-jqueryui textarea
+{
+	height : 200px;
+}
+
+/************************************************************************
+* Icons
+************************************************************************/
+
+.formlet-jqueryui .validIcon, 
+.formlet-jqueryui .removeIcon, 
+.formlet-jqueryui .addIcon, 
+.formlet-jqueryui .infoIcon , 
+.formlet-jqueryui .errorIcon
+{
+	display : block;
+	width : 16px;
+	height : 16px;
+	padding : 0;
+	margin:2px;
+	margin-left : 5px;
+	cursor : pointer;
+}

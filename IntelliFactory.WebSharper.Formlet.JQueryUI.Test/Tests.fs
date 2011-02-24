@@ -13,15 +13,23 @@ module Tests =
     [<JavaScript>]
     let Inspect (formlet: Formlet<'T>)  =
         Formlet.Do {
-            let! value = 
+            let! res = 
                 formlet
-                |> Formlet.Map (fun x -> string (box x))
-                |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+                |> Formlet.Map (fun x -> 
+                    string (box x)
+                )
+                |> Formlet.LiftResult
             return!
                 Formlet.OfElement (fun _ ->
-                    Div [Attr.Style "margin-top: 10px;padding:10px; border: 1px dotted #cccccc;"] -< [
-                        Text value
-                    ]
+                    match res with
+                    | Result.Success v ->
+                        Div [Attr.Style "margin-top: 10px;padding:10px; border: 1px dotted #cccccc;background-color : #DFF8BD;"] -< [
+                            Text v
+                        ]
+                    | Result.Failure fs ->
+                        Div [Attr.Style "margin-top: 10px;padding:10px; border: 1px dotted #cccccc;background-color : #f9e3e3;"] -< [
+                            Text "Fail"
+                        ]
                 )
         }
         
@@ -63,12 +71,12 @@ module Tests =
         )
 
     [<JavaScript>]
-    let TestButton =
-        Formlet.Do {
-            let! _ = Controls.Button "Click Me"
-            let! _ = Controls.Dialog (fun _ -> Div [Text "Viva Espana!"])
-            return "Done"
-        }
+    let TestButton = 
+        Controls.Button "Click Me"
+
+    [<JavaScript>]
+    let TestDialog =
+        Controls.Dialog (fun _ -> Div [Text "Viva Espana!"])
 
     [<JavaScript>]
     let TestAutocomplete =
@@ -78,7 +86,7 @@ module Tests =
     [<JavaScript>]
     let TestDatePicker  =
         let date = new EcmaScript.Date()
-        Controls.Datepicker (Some date)
+        Controls.Datepicker None
 
     [<JavaScript>]
     let TestSlider =
@@ -126,23 +134,12 @@ module Tests =
 
     [<JavaScript>]
     let TestDragAndDrop =
-        let conf =
-            {Controls.DragAndDropConfig.Default with
-                DragContainerStyle = 
-                    Some "padding: 20px; border: 1px solid #AAA; width: 300px"
-                DropContainerStyle = 
-                    Some "padding: 20px; border: 1px solid #AAA; width: 300px; margin-top : 10px"
-                DraggableStyle = 
-                    Some "background-color: #AAA; margin-right: 5px; display: inline-block; padding: 3px;"
-                DroppableStyle = 
-                    Some "background-color: #AAA; margin-right: 5px; display: inline-block; padding: 3px;"
-            }
         [
             "Item 1", 1, false
             "Item 2", 2, false
-            "Item 3", 3, true
+            "Item 3", 3, false
         ]
-        |> Controls.DragAndDrop (Some conf)
+        |> Controls.DragAndDrop None
         |> Formlet.Map (fun xs ->
             List.fold (fun x y-> string x + "," + string y) "" xs
         )
@@ -154,9 +151,12 @@ module Tests =
             |> Validator.IsNotEmpty "Not empty"
             |> Enhance.WithValidationIcon
             |> Enhance.WithTextLabel "Name"
+            |> Enhance.Many
+        
         let date =
             Controls.Datepicker None
             |> Enhance.WithTextLabel "Date"
+        
         let mood =
             let conf =
                 {Controls.SliderConfiguration.Default with
@@ -175,17 +175,36 @@ module Tests =
         let labels = 
             TestDragAndDrop
             |> Enhance.WithTextLabel "Labels"
+
+        let rec more () =
+            Formlet.Do {
+                let! _ = 
+                    Formlet.Yield (fun _ _ -> ())
+                    <*> Controls.Input ""
+                    <*> Controls.Button "Next"
+                    |> Formlet.Horizontal
+                let! _ =
+                    Formlet.OfElement <| fun _ ->
+                        Div [more ()]
+                return ()
+            }
         (
-            Formlet.Yield (fun n e d dd -> ()
+            Formlet.Yield (fun n e _ d _ dd -> 
+                ", " + 
+                (string e) +
+                ", " + 
+                (string d) + 
+                ", " + 
+                (string dd)
             )
-            <*> name
+            <*> (Enhance.WithLegend "Inside Legend" name)
             <*> date
             <*> mood
+            <*> TestSortable
+            <*> (more ())
             <*> labels
         )
-        |> Enhance.WithRowConfiguration rowConf
-        |> Enhance.WithCustomSubmitButton Enhance.FormButtonConfiguration.Default
-        |> Enhance.WithFormContainer
+        |> Enhance.WithSubmitButton "Submit"
 
     [<JavaScript>]
     let TestComposedSimple =

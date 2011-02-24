@@ -37,6 +37,9 @@
   </PropertyGroup>
   <Import Project="$(IfIvyLibDir)/IntelliFactory.WebSharper.targets" Condition="Exists('$(IfIvyLibDir)/IntelliFactory.WebSharper.targets')" />
   <ItemGroup>
+    <EmbeddedResource Include="styles/Formlet.css" />
+    <Compile Include="Resources.fs" />
+    <Compile Include="Dependencies.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="Controls.fs" />
     <Compile Include="Enhance.fs" />
