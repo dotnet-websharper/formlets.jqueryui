@@ -69,7 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
-    <Content Include="Formlet.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -79,7 +78,6 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="WebForm1.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -90,15 +88,10 @@
       <Project>{35514715-41DF-4C17-A9EC-D80ABCD9E353}</Project>
       <Name>IntelliFactory.WebSharper.Formlet.JQueryUI.Test</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="WebForm1.aspx.cs">
-      <DependentUpon>WebForm1.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="WebForm1.aspx.designer.cs">
-      <DependentUpon>WebForm1.aspx</DependentUpon>
-    </Compile>
+    <ProjectReference Include="..\IntelliFactory.WebSharper.Formlet.JQueryUI\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
+      <Project>{4A6BAE18-3F58-4ADD-A7E8-B5380EFDF0D1}</Project>
+      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

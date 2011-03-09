@@ -1,3 +1,7 @@
 % Overview
-Blablabla
+Formlets for jQueryUI extends the basic formlet library by providing a formlet interfaces for widgets from the
+jQueryUI JavaScript library. The library supplies a set of controls and some specialized 
+functions for enhancing jQueryUI formlets.
+
+
 
