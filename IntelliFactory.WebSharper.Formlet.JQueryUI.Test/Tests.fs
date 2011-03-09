@@ -85,8 +85,15 @@ module Tests =
 
     [<JavaScript>]
     let TestDatePicker  =
-        let date = new EcmaScript.Date()
         Controls.Datepicker None
+
+    let TestTabsChoose =
+        [
+            "Tab 1", Controls.Input ""
+            "Tab 2", Controls.TextArea ""
+            "Tab 3", Controls.TextArea ""
+        ]
+        |> Controls.TabsChoose
 
     [<JavaScript>]
     let TestSlider =
@@ -123,14 +130,6 @@ module Tests =
             List.fold (fun x y-> x + "," + y) "" xs
         )
 
-    [<JavaScript>]
-    let TestTabsChoose =
-        [
-            "Tab 1", Controls.Input ""
-            "Tab 2", Controls.TextArea ""
-            "Tab 3", Controls.TextArea ""
-        ]
-        |> Controls.TabsChoose
 
     [<JavaScript>]
     let TestDragAndDrop =
@@ -239,7 +238,7 @@ module Tests =
         }
 
     [<JavaScript>]
-    let Foo () =
+    let AllTests () =
         [
             "AccordionChoose",  Inspect TestAccordionChoose
             "AccordionList", Inspect TestAccordionList

@@ -1,9 +1,109 @@
 % Usage
+Formlets for jQueryUI is based on the standard WebSharper Formlet library and controls and combinators
+from both libraries can be intermixed.
+
+Some enhancement functions are overloaded in jQueryUI formlets in order to 
+be compliant with the look and feel defined by the jQueryUI theme in use.
 
 ## Controls
-Info here..
+The library extends the set of primitive controls with additional ones based on jQueryUI widgets.
+The following formlet controls are provided:
+
+  * Button
+
+  * Dialog
+
+  * AccordionList
+
+  * AccordionChoose
+
+  * Autocomplete
+
+  * Datepicker
+
+  * InputDatepicker
+
+  * Slider
+
+  * Sortable
+
+  * TabsList
+
+  * TabsChoose
+
+  * DragAndDrop
+
+Here is an example of how to create a `TabsChoose` control for
+displaying two different formlets on separate tabs:
+
+
+    [
+        "Tab 1", Controls.Input ""
+        "Tab 2", Controls.Select 0 ["A", "0"; "B", "1"]
+    ]
+    |> Controls.TabsChoose
+
+The resulting formlet returns the value of the currently selected
+formlet (either the input box or the text area).
+
+Here is another example using the `AutoComplete` control for 
+displaying an input text field with a list of suggestions:
+
+
+    Server.GetCountries ()
+    |> Controls.Autocomplete ""
+    |> Validator.Is (fun c -> isCountry c) "Invalid Country"
+    |> Enhance.WithValidationIcon
+    |> Enhance.WithTextLabel "Your Country"
+
+Since the controls produce regular formlet values, all the enhancement
+functions as well as validation capabilities from the standard WebSharper formlet library
+can be utilized.
+
+JQueryUI controls are composed just as any other formlets. Here is an 
+example of composing a standard text area with a `Datepicker` formlet:
+
+
+
+    Formlet.Yield (fun date text -> ...)
+    <*> Controls.TextArea ""
+    <*> Controls.Datepicker None
 
 ## Enhance
 
+The following standard enhancement functions are overloaded:
+
+  * WithSubmitButton
+
+  * WithResetButton
+
+  * WithSubmitAndResetButtons
+
+  * WithLegend
+
+  * Many
+
+  * WithFormContainer
+
+These functions differs from ordinary formlet functions by providing
+jQueryUI compatible versions with a different look and feel specified by 
+the current theme.
+
+The function `WithFormContainer` wraps the formlet in a panel with a CSS
+class enabling the default formlet style to be applied.
+
+
 ## Change Themes
+The CSS defining the look and feel of jQueryUI applications is configurable
+by overriding the  `appSetting` for `IntelliFactory.WebSharper.JQueryUI.Dependencies+JQueryUICss`  in `web.config`.
+
+Here is an example of setting the theme:
+
+
+    <appSettings>
+	    <add key="IntelliFactory.WebSharper.JQueryUI.Dependencies+JQueryUICss" value="/theme.css"/>
+    </appSettings>
+
+The theme of the application affects visual components such as buttons, containers and icons.
+
 

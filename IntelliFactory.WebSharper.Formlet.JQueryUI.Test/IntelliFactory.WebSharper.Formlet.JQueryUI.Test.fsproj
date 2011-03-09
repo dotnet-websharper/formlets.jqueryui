@@ -70,7 +70,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sample.fs" />
+    <Compile Include="Samples.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
