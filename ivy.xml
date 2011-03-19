@@ -10,9 +10,8 @@
     <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="dll.js" type="bin" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="dll.dep" type="bin" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="xml" type="doc" conf="default" />
-    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="api.zip" type="doc" conf="default" />
-    <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="Documentation.zip" type="doc" conf="default" />
     <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="pdb" type="debug" conf="default" />
+    <artifact name="if-ws-formlets-jqueryui-docs" ext="zip" type="doc" conf="default" />
   </publications>
   <dependencies>
     <dependency name="if-ws" rev="latest.integration" conf="build->compiler" />
@@ -26,7 +25,6 @@
     <dependency name="if-ws-control" rev="latest.integration" conf="default" />
     <dependency name="if-ws-collections" rev="latest.integration" conf="default" />
     <dependency name="if-ws-web" rev="latest.integration" conf="default" />
-    <dependency name="if-ws-jqueryui" rev="latest.integration" conf="default" />
-    
+    <dependency name="if-ws-jqueryui" rev="latest.integration" conf="default" />    
   </dependencies>
 </ivy-module>

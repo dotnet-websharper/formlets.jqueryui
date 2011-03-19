@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
     <RootNamespace>$(Name)</RootNamespace>
-    <AssemblyName>IntelliFactory.WebSharper.Formlet.JQueryUI</AssemblyName>
+    <AssemblyName>$(Name)</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,9 +33,9 @@
   </PropertyGroup>
   <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.FSharp.targets" />
   <PropertyGroup>
-    <WEBSHARPER_HOME>$(IfIvyLibDir)</WEBSHARPER_HOME>
+    <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
   </PropertyGroup>
-  <Import Project="$(IfIvyLibDir)/IntelliFactory.WebSharper.targets" Condition="Exists('$(IfIvyLibDir)/IntelliFactory.WebSharper.targets')" />
+  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" />
   <ItemGroup>
     <EmbeddedResource Include="styles/Formlet.css" />
     <Compile Include="Resources.fs" />
