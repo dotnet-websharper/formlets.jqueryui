@@ -4,6 +4,7 @@
 <head runat="server">
     <title>WebSharper Playground</title>
     <WebSharper:ScriptManager runat="server" />
+    <%--<link rel = "stylesheet" href="/aristo/css/Aristo" type ="text/css"/>--%>
 </head>
 <body>
     <Sample:SampleControl runat="server" />

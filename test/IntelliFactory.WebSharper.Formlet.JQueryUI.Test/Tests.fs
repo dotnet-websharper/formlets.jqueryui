@@ -244,13 +244,13 @@ module Tests =
             "AccordionList", Inspect TestAccordionList
             "AccordionAutocomplete", Inspect TestAutocomplete
             "DatePicker", Inspect TestDatePicker
-            "Button", Inspect TestButton
-            "Slider", Inspect TestSlider
-            "TabsList", Inspect TestTabsList
-            "TabsChoose", Inspect TestTabsChoose
-            "DragAndDrop", Inspect TestDragAndDrop
-            "Sortable" , Inspect TestSortable
-            "Composed", Inspect TestComposed
+//            "Button", Inspect TestButton
+//            "Slider", Inspect TestSlider
+//            "TabsList", Inspect TestTabsList
+//            "TabsChoose", Inspect TestTabsChoose
+//            "DragAndDrop", Inspect TestDragAndDrop
+//            "Sortable" , Inspect TestSortable
+//            "Composed", Inspect TestComposed
         ]
         |> Controls.TabsList
         |> Formlet.Map ignore
