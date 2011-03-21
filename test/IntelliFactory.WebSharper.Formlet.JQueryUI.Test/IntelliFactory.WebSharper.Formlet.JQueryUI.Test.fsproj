@@ -59,19 +59,19 @@
   </ItemGroup>
   <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.FSharp.targets" />
   <PropertyGroup>
-    <WEBSHARPER_HOME>$(IfIvyLibDir)</WEBSHARPER_HOME>
+    <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
   </PropertyGroup>
-  <Import Project="$(IfIvyLibDir)/IntelliFactory.WebSharper.targets" Condition="Exists('$(IfIvyLibDir)/IntelliFactory.WebSharper.targets')" />
-  <ItemGroup>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Formlet.JQueryUI\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
-      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
-      <Project>{4a6bae18-3f58-4add-a7e8-b5380efdf0d1}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" />
   <ItemGroup>
     <Compile Include="Samples.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\if-ws-formlets-jqueryui\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
+      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
+      <Project>{4a6bae18-3f58-4add-a7e8-b5380efdf0d1}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

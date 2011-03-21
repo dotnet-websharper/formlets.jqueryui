@@ -13,5 +13,5 @@ type SampleControl() =
 
     [<JavaScript>]
     override this.Body =
-        Samples.AddLabels ()
+        Tests.AllTests ()
         :> _

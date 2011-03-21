@@ -84,21 +84,21 @@
     <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\if-ws-formlets-jqueryui\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
+      <Project>{4A6BAE18-3F58-4ADD-A7E8-B5380EFDF0D1}</Project>
+      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntelliFactory.WebSharper.Formlet.JQueryUI.Test\IntelliFactory.WebSharper.Formlet.JQueryUI.Test.fsproj">
       <Project>{35514715-41DF-4C17-A9EC-D80ABCD9E353}</Project>
       <Name>IntelliFactory.WebSharper.Formlet.JQueryUI.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Formlet.JQueryUI\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
-      <Project>{4A6BAE18-3F58-4ADD-A7E8-B5380EFDF0D1}</Project>
-      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <PropertyGroup>
-    <WEBSHARPER_HOME>$(IfIvyLibDir)</WEBSHARPER_HOME>
+    <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
   </PropertyGroup>
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets" Condition="Exists('$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets')" />
+  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets"/>
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
