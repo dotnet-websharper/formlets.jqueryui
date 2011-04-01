@@ -158,21 +158,22 @@ module Controls =
     let Autocomplete def (source: seq<string>) : Formlet<string> =
         MkFormlet <| fun () ->
             let state = State<string>.New(def)
-            let input = 
-                let i = Input [Text def]
-                let upd () = state.Trigger (Success i.Value)
-                i |>! Events.OnKeyUp (fun el _ ->
-                    upd ()
-                )
-                |>! Events.OnMouseOut (fun  el _ ->
-                    upd ()
-                )
-                |>! Events.OnChange (fun _ ->
-                    upd ()
-                )
-                |>! Events.OnMouseLeave (fun el _ ->
-                    upd ()
-                )
+            
+            let input = Input [Text def]
+            let upd () = 
+                Success input.Value
+                |> state.Trigger
+
+            // Update on key up events
+            input 
+            |> Events.OnKeyUp (fun el _ ->
+                upd ()
+            )
+            // Update on change events
+            input
+            |> Events.OnChange (fun _ ->
+                upd ()
+            )
             let ac = 
                 JQueryUI.Autocomplete.New(
                     input , 
@@ -180,6 +181,10 @@ module Controls =
                         Source = Array.ofSeq source
                     )
                 )
+
+            ac.OnChange(fun ev el -> 
+                upd ()
+            )
             let reset () =
                 input.Value <- def
                 state.Trigger (Success def)
