@@ -158,8 +158,7 @@ module Controls =
     let Autocomplete def (source: seq<string>) : Formlet<string> =
         MkFormlet <| fun () ->
             let state = State<string>.New(def)
-            
-            let input = Input [Text def]
+            let input = Input [Attr.Value def]
             let upd () = 
                 Success input.Value
                 |> state.Trigger
@@ -188,6 +187,7 @@ module Controls =
             let reset () =
                 input.Value <- def
                 state.Trigger (Success def)
+            
             ac, reset, state
 
     [<JavaScript>]
