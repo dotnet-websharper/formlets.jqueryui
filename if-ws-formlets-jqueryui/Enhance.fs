@@ -17,60 +17,141 @@ module Enhance =
         formlet
         |> Enhance.WithCustomValidationIcon 
             {
-                    ValidIconClass = CC.ValidIconClass
-                    ErrorIconClass = CC.ErrorIconClass
+                ValidIconClass = CC.ValidIconClass
+                ErrorIconClass = CC.ErrorIconClass
             }
+
+    
+    [<JavaScript>]
+    let RX = Formlet.Data.UtilsProvider.Reactive
+
+    [<JavaScript>]
+    let RMap f s= RX.Select s f
+
+    [<JavaScript>]
+    let RChoose f s=  RX.Choose s f
+
+
+    [<JavaScript>]
+    let BaseFormlet = FormletProvider(UtilsProvider)
+
+    open IntelliFactory.Formlet.Base.Tree
+
+
+    [<JavaScript>]
+    let private MakeWithSubmitAndResetButtons 
+                            (submitLabel: option<string>) 
+                            (resetLabel: option<string>) 
+                            (formlet: Formlet<'T>) : Formlet<'T> =
+        BaseFormlet.New <| fun _ ->
+            
+            // Submit button
+            let submitButton = 
+                submitLabel
+                |> Option.map (fun label ->
+                    JQueryUI.Button.New (label)
+                )
+
+            // Reset button
+            let resetButton = 
+                resetLabel
+                |> Option.map (fun label ->
+                    JQueryUI.Button.New (label)
+                )
+
+            let formBody =
+                {
+                    Label = None
+                    Element = 
+                        [submitButton; resetButton]
+                        |> List.choose id
+                        |> Div
+                }
+
+            // Build the form
+            let form = Formlet.BuildForm formlet
+
+            // Enable/Disable button depending on state
+            submitButton
+            |> Option.iter (fun button ->
+                form.State.Subscribe (fun res ->
+                    match res with
+                    | Result.Success _ -> 
+                        button.Enable ()
+                    | Result.Failure _ -> 
+                        button.Disable ()
+                )
+                |> ignore
+            )
+
+            // State of the formlet
+            let state =
+                match submitButton with
+                | Some button ->
+                    let count = ref 0
+                    let submitButtonClickState = new Event<int>()
+                    button.OnClick (fun _ ->
+                        incr count
+                        submitButtonClickState.Trigger count.Value
+                    )
+                    let latestCount = ref 0
+                    RX.CombineLatest 
+                        form.State 
+                        submitButtonClickState.Publish 
+                        (fun value count -> value, count)
+                    |> RChoose (fun (value, count) ->
+                        if count <> latestCount.Value then
+                            latestCount := count
+                            Some value
+                        else
+                            None
+                    )
+                | None ->
+                    form.State
+
+            // Create the body stream
+            let body = 
+                let right =
+                    Tree.Leaf formBody
+                    |> Tree.Edit.Replace
+                    |> Tree.Edit.Right
+                    |> RX.Return
+                let left =
+                    form.Body
+                    |> RMap Tree.Edit.Left
+                RX.Merge left right
+            
+            // Reset function
+            let reset x =
+                form.Notify x
+
+            // Trigger reset
+            resetButton
+            |> Option.iter (fun button ->
+                button.OnClick (fun _ ->
+                    reset ()
+                )
+            )
+
+            {
+                Body = body
+                Dispose = fun () -> ()
+                State   = state
+                Notify = reset
+            }
+        |> Data.OfIFormlet
 
     [<JavaScript>]
     let WithSubmitButton (label: string) (formlet: Formlet<'T>) : Formlet<'T> =
-        Enhance.WithSubmitFormlet formlet (fun res ->
-            match res with
-            | Result.Success _ -> 
-                JQueryUI.Controls.Button label
-            | Result.Failure _ ->
-                let conf = JQueryUI.ButtonConfiguration(Label = label)
-                conf.Disabled <- true
-                JQueryUI.Controls.CustomButton conf
-            |> Formlet.Map ignore
-        )
+        MakeWithSubmitAndResetButtons (Some label) None formlet
 
     [<JavaScript>]
     let WithResetButton (label: string) (formlet: Formlet<'T>) : Formlet<'T> =
-        Enhance.WithResetFormlet formlet (JQueryUI.Controls.Button label)
+        MakeWithSubmitAndResetButtons None (Some label) formlet
 
     [<JavaScript>]
     let WithSubmitAndResetButtons (submitLabel: string) (resetLabel: string) (formlet: Formlet<'T>) : Formlet<'T> =
-        let submitReset (reset : obj -> unit) (result : Result<'T>) : Formlet<'T> =
-            
-            let submit : Formlet<'T> =
-                match result with
-                | Success (value: 'T) -> 
-                    JQueryUI.Controls.Button submitLabel
-                    |> Formlet.Map (fun _ -> value)
-                | Failure fs -> 
-                    let conf = JQueryUI.ButtonConfiguration(Label = submitLabel)
-                    conf.Disabled <- true
-                    JQueryUI.Controls.CustomButton conf
-                    |> Formlet.MapResult (fun _ -> Failure fs)
-            
-            let reset =
-                Formlet.Do {
-                    let! res = Formlet.LiftResult (JQueryUI.Controls.Button resetLabel)
-                    do
-                        match res with
-                        | Success _  ->
-                            reset null
-                        | _          -> ()
-                    return ()
-                }
-            (
-                Formlet.Return (fun v _ -> v)
-                <*> submit
-                <*> reset
-            )            
-            |> Formlet.Horizontal
-        
-        Enhance.WithSubmitAndReset formlet submitReset
+        MakeWithSubmitAndResetButtons (Some submitLabel) (Some resetLabel) formlet
 
     /// Creates a formlet wrapped inside a legend element with the
     /// given label. This function merges the internal form body components.
