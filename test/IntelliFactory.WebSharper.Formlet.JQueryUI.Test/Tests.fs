@@ -149,6 +149,7 @@ module Tests =
         let name =
             TestAutocomplete
             |> Validator.IsNotEmpty "Not empty"
+            |> Validator.IsEmail "Email"
             |> Enhance.WithValidationIcon
             |> Enhance.WithTextLabel "Name"
             |> Enhance.Many
@@ -239,7 +240,30 @@ module Tests =
         }
 
     [<JavaScript>]
-    let AllTests () =
+    let TestSubmitAndResetButtons =
+        let f =
+            Controls.TextArea ""
+            |> Validator.IsEmail ""
+            |> Enhance.WithValidationIcon
+        let f1 =
+            Inspect (
+                Enhance.WithSubmitButton "Submit" f
+            )
+        let f2 =
+            Inspect (
+                Enhance.WithSubmitAndResetButtons "Submit" "Reset" f
+            )
+        let f3 =
+            Inspect (
+                Enhance.WithResetButton "Reset" f
+            )
+        [ f1 ; f2 ; f3 ]
+        |> Formlet.Sequence
+        |> Formlet.Map ignore
+
+    
+    [<JavaScript>]
+    let AllTests () = 
         [
             "AccordionChoose",  Inspect TestAccordionChoose
             "AccordionList", Inspect TestAccordionList
@@ -252,6 +276,7 @@ module Tests =
             "DragAndDrop", Inspect TestDragAndDrop
             "Sortable" , Inspect TestSortable
             "Composed", Inspect TestComposed
+            "Submit and Reset" , TestSubmitAndResetButtons
         ]
         |> Controls.TabsList
         |> Formlet.Map ignore
