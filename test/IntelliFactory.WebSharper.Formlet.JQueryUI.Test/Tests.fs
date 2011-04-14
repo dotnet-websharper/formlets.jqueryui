@@ -242,7 +242,7 @@ module Tests =
     [<JavaScript>]
     let TestSubmitAndResetButtons =
         let f =
-            Controls.TextArea ""
+            Controls.TextField {Controls.TextFieldConfiguration.Default with UpdateFrequency = Controls.UpdateFrequency.OnBlur}
             |> Validator.IsEmail ""
             |> Enhance.WithValidationIcon
         let f1 =
