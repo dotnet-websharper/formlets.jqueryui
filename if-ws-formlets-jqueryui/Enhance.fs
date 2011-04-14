@@ -31,12 +31,10 @@ module Enhance =
     [<JavaScript>]
     let RChoose f s=  RX.Choose s f
 
-
     [<JavaScript>]
     let BaseFormlet = FormletProvider(UtilsProvider)
 
     open IntelliFactory.Formlet.Base.Tree
-
 
     [<JavaScript>]
     let private MakeWithSubmitAndResetButtons 
@@ -71,17 +69,23 @@ module Enhance =
             // Build the form
             let form = Formlet.BuildForm formlet
 
+            
+            
             // Enable/Disable button depending on state
             submitButton
             |> Option.iter (fun button ->
-                form.State.Subscribe (fun res ->
-                    match res with
-                    | Result.Success _ -> 
-                        button.Enable ()
-                    | Result.Failure _ -> 
-                        button.Disable ()
+                button
+                |> OnAfterRender (fun _ ->
+                    button.Disable ()
+                    form.State.Subscribe (fun res ->
+                        match res with
+                        | Result.Success _ -> 
+                            button.Enable ()
+                        | Result.Failure _ -> 
+                            button.Disable ()
+                    )
+                    |> ignore
                 )
-                |> ignore
             )
 
             // State of the formlet

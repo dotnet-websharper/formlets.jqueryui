@@ -13,5 +13,12 @@ type SampleControl() =
 
     [<JavaScript>]
     override this.Body =
-        Tests.AllTests ()
+        let form =
+            Controls.Input ""
+            |> Validator.IsNotEmpty "Not empty"
+            |> Enhance.WithValidationIcon
+            |> Enhance.WithSubmitAndResetButtons "Update" "Reset"
+            |> Enhance.WithFormContainer
+
+        form
         :> _
