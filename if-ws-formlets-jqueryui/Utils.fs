@@ -8,6 +8,7 @@ open System
 
 
 module CssConstants =
+
     
     [<JavaScript>]
     let ValidIconClass = "validIcon ui-icon ui-icon-check"

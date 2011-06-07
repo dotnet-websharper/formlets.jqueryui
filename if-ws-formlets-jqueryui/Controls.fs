@@ -235,22 +235,22 @@ module Controls =
         | [<Name "horizontal">] Horizontal
     
 
+    type RangeConfig =
+        | Bool of bool
+        | Min
+        | Max
+
     type SliderConfiguration =
         {
-            [<Name "animate">]
             Animate : bool
-            [<Name "orientation">]
             Orientation : Orientation
-            [<Name "value">]
-            Value : int
-            [<Name "min">]
+            Values : int []
             Min : int
-            [<Name "max">]
             Max : int
-            [<Name "width">]
             Width : option<int>
-            [<Name "height">]
             Height : option<int>
+            Range : RangeConfig
+            
         }         
         with
             [<JavaScript>]
@@ -258,22 +258,45 @@ module Controls =
                 {
                     Animate = false
                     Orientation = Horizontal
-                    Value = 0
+                    Values = [|0|]
                     Min = 0
                     Max = 100
                     Width = None
                     Height = None
+                    Range = Bool false
                 }
 
     /// ...
     [<JavaScript>]
-    let Slider (conf: option<SliderConfiguration>) : Formlet<int> =
+    let Slider (conf: option<SliderConfiguration>) : Formlet<list<int>> =
         MkFormlet <| fun () ->
             let conf =
                 match conf with
                 | Some c    -> c
                 | None      -> SliderConfiguration.Default
             
+            let jqConf = 
+                JQueryUI.SliderConfiguration (
+                    Animate = conf.Animate,
+                    Values = conf.Values,
+                    Min = conf.Min,
+                    Max = conf.Max
+                )
+            match conf.Range with
+            | RangeConfig.Bool b ->
+                jqConf.Range <- b
+            | RangeConfig.Max ->
+                jqConf.Range <- "max"
+            | RangeConfig.Min ->
+                jqConf.Range <- "min"
+
+            match conf.Orientation with
+            | Orientation.Horizontal ->
+                jqConf.Orientation <- "horizontal"
+            | Orientation.Vertical ->
+                jqConf.Orientation <- "vertical"
+
+
             let style =
                 let width w = "width: " + (string w) + "px;"
                 let height h = "height: " + (string h) + "px;"
@@ -287,14 +310,20 @@ module Controls =
                 | None, None    ->
                     []
 
-            let slider = JQueryUI.Slider.New(unbox (box conf))
+            let slider = JQueryUI.Slider.New(unbox (box jqConf))
             let state = State<_>.New()
             slider.OnChange(fun _ ->
-                state.Trigger (Success slider.Value)
+                slider.Values
+                |> List.ofArray
+                |> Success 
+                |> state.Trigger
             )
             let reset () =
-                slider.Value <- conf.Value
-                state.Trigger (Success conf.Value)
+                slider.Values <- conf.Values
+                conf.Values
+                |> List.ofArray
+                |> Success 
+                |> state.Trigger 
             
             let slider = 
                 Div style -< [slider]
