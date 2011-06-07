@@ -11,7 +11,8 @@ open IntelliFactory.WebSharper.Formlet.JQueryUI
 module Tests =
 
     [<JavaScript>]
-    let Inspect (formlet: Formlet<'T>)  =
+    let Inspect (formlet: Formlet<'T>) =
+        
         Formlet.Do {
             let! res = 
                 formlet
@@ -100,12 +101,17 @@ module Tests =
     let TestSlider =
         let conf = 
             { Controls.SliderConfiguration.Default with
-                Min = 20
-                Max = 30
+                Min = 10
+                Max = 60
+                Range = Controls.RangeConfig.Min
                 Width = Some 500
-                Orientation = Controls.Orientation.Vertical
+                Values = [| 20 |]
+                Orientation = Controls.Orientation.Horizontal
             }
         Controls.Slider (Some conf)
+        |> Formlet.Map (fun xs ->
+            xs |> List.map string |> List.fold (fun x y -> x + " , " + y) ""
+        )
     
     [<JavaScript>]
     let TestSortable =
@@ -242,7 +248,7 @@ module Tests =
     [<JavaScript>]
     let TestSubmitAndResetButtons =
         let f =
-            Controls.TextField {Controls.TextFieldConfiguration.Default with UpdateFrequency = Controls.UpdateFrequency.OnBlur}
+            Controls.Input ""
             |> Validator.IsEmail ""
             |> Enhance.WithValidationIcon
         let f1 =

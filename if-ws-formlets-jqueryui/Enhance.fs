@@ -69,8 +69,6 @@ module Enhance =
             // Build the form
             let form = Formlet.BuildForm formlet
 
-            
-            
             // Enable/Disable button depending on state
             submitButton
             |> Option.iter (fun button ->
