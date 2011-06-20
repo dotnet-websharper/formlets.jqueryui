@@ -57,11 +57,7 @@
     <Reference Include="IntelliFactory.WebSharper.Formlet" />
     <Reference Include="IntelliFactory.WebSharper.Ecma" />
   </ItemGroup>
-  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.FSharp.targets" />
-  <PropertyGroup>
-    <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
-  </PropertyGroup>
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.targets" />
+  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.WebSharper-2.3.targets" />
   <ItemGroup>
     <Compile Include="Samples.fs" />
     <Compile Include="Tests.fs" />

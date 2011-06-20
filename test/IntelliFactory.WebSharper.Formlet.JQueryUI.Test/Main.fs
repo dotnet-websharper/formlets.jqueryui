@@ -13,34 +13,5 @@ type SampleControl() =
 
     [<JavaScript>]
     override this.Body =
-
-        let form =
-            Controls.Input ""
-            |> Validator.IsNotEmpty "Not empty"
-            |> Enhance.WithValidationIcon
-            |> Enhance.WithSubmitAndResetButtons "Update" "Reset"
-            |> Enhance.WithFormContainer
-
-        let form =
-            let slider =
-                JQueryUI.Slider.New(
-                    JQueryUI.SliderConfiguration(
-                        Values = [|10;  30 ; 50|]
-                    )
-                )
-
-            let button = 
-                JQueryUI.Button.New("Click")
-            button.OnClick (fun _ ->
-                slider.Values
-                |> Seq.iter (fun x ->
-                    JavaScript.Alert (unbox box x)
-                )
-            )
-            Div [
-                button :> IPagelet
-                slider :> _ 
-            ]
-        // form
         Tests.AllTests ()
         :> _
