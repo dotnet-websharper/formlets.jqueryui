@@ -93,12 +93,11 @@
       <Name>IntelliFactory.WebSharper.Formlet.JQueryUI.Test</Name>
     </ProjectReference>
   </ItemGroup>
+
   <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
-  <PropertyGroup>
-    <WEBSHARPER_HOME>$(MSBuildProjectDirectory)/../.build/lib</WEBSHARPER_HOME>
-  </PropertyGroup>
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Web.targets"/>
+  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.WebSharper.Web-2.3.targets" />
+  
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
