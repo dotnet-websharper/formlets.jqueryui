@@ -43,9 +43,6 @@ module CssConstants =
 
 module internal Utils =
 
-    [<Inline "windows.alert($x)">]
-    let Alert x = ()
-    
     [<JavaScript>]
     let MkFormlet f =
         Formlet.BuildFormlet <| fun () ->
@@ -64,17 +61,19 @@ module internal Utils =
                 
     /// Implementation for IObservable representing
     /// the state of controls.
-    type internal State<'T> =
+    type State<'T> =
         internal 
             {
-                Initial : Result<'T>
+                Initial : option<Result<'T>>
                 Event   : Event<Result<'T>>
             }
         interface IObservable<Result<'T>> with
-            
+
             [<JavaScript>]
             member this.Subscribe(o) =
-                o.OnNext(this.Initial)
+                this.Initial
+                |> Option.iter o.OnNext
+                
                 let disp =
                     this.Event.Publish.Subscribe(fun v ->
                         o.OnNext(v)
@@ -89,7 +88,7 @@ module internal Utils =
         [<Name "NewFail">]
         static member New<'U>() : State<'U> =
             {
-                Initial = Result.Failure []
+                Initial = None
                 Event = Event<_>()
             }
         
@@ -97,14 +96,14 @@ module internal Utils =
         [<Name "NewSuccess">]
         static member New<'U>(v) : State<'U> =
             {
-                Initial = Result.Success v
+                Initial = Some <| Result.Success v
                 Event = Event<_>()
             }
         
         [<JavaScript>]
         static member FromResult(res: Result<'U>) : State<'U> =
             {
-                Initial = res
+                Initial = Some res
                 Event = Event<_>()
             } 
 

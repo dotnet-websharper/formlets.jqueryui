@@ -77,9 +77,9 @@ module Enhance =
                     button.Disable ()
                     form.State.Subscribe (fun res ->
                         match res with
-                        | Result.Success _ -> 
+                        | Result.Success _ ->
                             button.Enable ()
-                        | Result.Failure _ -> 
+                        | Result.Failure fs ->
                             button.Disable ()
                     )
                     |> ignore

@@ -193,31 +193,45 @@ module Controls =
     [<JavaScript>]
     let private DatepickerInput showCalendar (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
         MkFormlet <| fun () ->
-            let date = 
+            let inp =
                 if showCalendar then
-                    JQueryUI.Datepicker.New()
+                    None
                 else
-                    JQueryUI.Datepicker.New(Input [])
-            let defDate =
+                    Some <| Input []
+            let date = 
+                match inp with
+                | None ->
+                    JQueryUI.Datepicker.New()
+                | Some inp ->
+                    JQueryUI.Datepicker.New inp
+
+
+            let state = 
                 match def with
-                | Some d -> d
-                | None   -> new EcmaScript.Date ()
-            let state = State<EcmaScript.Date   >.New()
+                | Some date -> State<EcmaScript.Date>.New(date)
+                | None      -> State<_>.New()
+
             date.OnSelect (fun date ->
                 state.Trigger (Success date)
             )
 
             let reset () =
-                date.SetDate (unbox defDate)
                 match def with
-                | Some d -> 
+                | Some d ->
+                    date.SetDate (unbox d)
                     state.Trigger (Success d)
-                | None   -> 
+                | None ->
+                    match inp with
+                    | Some inp  -> inp.Value <- ""
+                    | None      -> ()
                     state.Trigger (Failure [])
+
             date 
             |> OnAfterRender (fun _ ->
                 reset ()
-            )            
+            )
+
+
             date, reset, state
 
     [<JavaScript>]
@@ -227,8 +241,6 @@ module Controls =
     [<JavaScript>]
     let InputDatepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
         DatepickerInput false def
-
-
 
     type Orientation =
         | [<Name "vertical">] Vertical
