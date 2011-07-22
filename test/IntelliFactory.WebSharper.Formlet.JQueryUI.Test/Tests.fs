@@ -86,7 +86,8 @@ module Tests =
 
     [<JavaScript>]
     let TestDatePicker  =
-        Controls.Datepicker None
+        // Controls.Datepicker None
+        Controls.InputDatepicker None
 
     [<JavaScript>]
     let TestTabsChoose =
