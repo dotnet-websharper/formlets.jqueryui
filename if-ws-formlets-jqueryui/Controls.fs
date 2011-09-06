@@ -231,7 +231,6 @@ module Controls =
                 reset ()
             )
 
-
             date, reset, state
 
     [<JavaScript>]

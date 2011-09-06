@@ -23,7 +23,7 @@ module Enhance =
 
     
     [<JavaScript>]
-    let RX = Formlet.Data.UtilsProvider.Reactive
+    let RX = Formlet.Data.UtilsProvider().Reactive
 
     [<JavaScript>]
     let RMap f s= RX.Select s f
@@ -32,7 +32,7 @@ module Enhance =
     let RChoose f s=  RX.Choose s f
 
     [<JavaScript>]
-    let BaseFormlet = FormletProvider(UtilsProvider)
+    let BaseFormlet = FormletProvider(UtilsProvider ())
 
     open IntelliFactory.Formlet.Base.Tree
 
