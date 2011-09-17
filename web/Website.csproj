@@ -16,6 +16,7 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,23 +50,9 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.Mobile" />
-    <Reference Include="IntelliFactory.WebSharper.Core" />
-    <Reference Include="IntelliFactory.WebSharper.Collections" />
-    <Reference Include="IntelliFactory.WebSharper.Control" />
-    <Reference Include="IntelliFactory.Html" />
-    <Reference Include="IntelliFactory.Json" />
-    <Reference Include="IntelliFactory.WebSharper" />
-    <Reference Include="IntelliFactory.WebSharper.Formlet" />
-    <Reference Include="IntelliFactory.Formlet.Base" />
-    <Reference Include="IntelliFactory.Reactive" />
-    <Reference Include="IntelliFactory.WebSharper.Dom" />
-    <Reference Include="IntelliFactory.WebSharper.Html" />
-    <Reference Include="IntelliFactory.WebSharper.Json" />
-    <Reference Include="IntelliFactory.WebSharper.JQuery" />
-    <Reference Include="IntelliFactory.WebSharper.Remoting" />
-    <Reference Include="IntelliFactory.WebSharper.Web" />
-    <Reference Include="IntelliFactory.WebSharper.XmlHttpRequest" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="IntelliFactory.WebSharper.Control" />
+    <Reference Include="IntelliFactory.WebSharper.Collections" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
@@ -84,20 +71,18 @@
     <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\if-ws-formlets-jqueryui\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
-      <Project>{4A6BAE18-3F58-4ADD-A7E8-B5380EFDF0D1}</Project>
-      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Formlet.JQueryUI.Test\IntelliFactory.WebSharper.Formlet.JQueryUI.Test.fsproj">
+    <ProjectReference Include="..\if-ws-formlets-jqueryui-tests\IntelliFactory.WebSharper.Formlet.JQueryUI.Test.fsproj">
       <Project>{35514715-41DF-4C17-A9EC-D80ABCD9E353}</Project>
       <Name>IntelliFactory.WebSharper.Formlet.JQueryUI.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\if-ws-formlets-jqueryui\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
+      <Project>{4A6BAE18-3F58-4ADD-A7E8-B5380EFDF0D1}</Project>
+      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
+    </ProjectReference>
   </ItemGroup>
-
-  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
-  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.WebSharper.Web-2.3.targets" />
-  
+  <Import Project="..\.build\lib\IntelliFactory.WebSharper.Web.targets" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">

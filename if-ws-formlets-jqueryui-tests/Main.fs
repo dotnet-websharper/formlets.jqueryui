@@ -15,10 +15,6 @@ module F =
 module JQueryFormlet =
 
     open IntelliFactory.Formlet.Base
-    let RX = IntelliFactory.Reactive.Reactive.Default
-
-    [<JavaScript>]
-    let RMap f s= RX.Select s f
 
     [<JavaScript>]
     let J () =
@@ -82,8 +78,7 @@ module JQueryFormlet =
             f4
         ]
 
-
-
+[<Sealed>]
 type SampleControl () =
     inherit Web.Control()
 
@@ -91,6 +86,6 @@ type SampleControl () =
     override this.Body = 
         Tests.AllTests () :> _
         //JQueryFormlet.Main () :> _
-    
+
 
 

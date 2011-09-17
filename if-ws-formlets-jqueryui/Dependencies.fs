@@ -17,4 +17,4 @@ module internal Resources =
     open IntelliFactory.Formlet.Base
     /// Default CSS skin.
     type internal SkinResource() =
-        inherit Resources.BaseResource("Formlet.css")
+        inherit Core.Resources.BaseResource("Formlet.css")
