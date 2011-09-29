@@ -302,6 +302,14 @@ module Tests =
             |> Enhance.WithResetButton "Reset"
             |> Inspect
 
+            // Bugzilla 490
+            [   
+                ("tab1", Controls.Input "" |> Validator.IsNotEmpty "")
+                ("tab2", Controls.Input "" |> Validator.IsNotEmpty "")
+            ]
+            |> Controls.TabsChoose
+            |> Inspect
+
         ]
         |> Formlet.Sequence
         |> Formlet.Map ignore
