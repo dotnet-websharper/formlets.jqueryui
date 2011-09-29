@@ -12,7 +12,6 @@ module Tests =
 
     [<JavaScript>]
     let Inspect (formlet: Formlet<'T>) =
-        
         Formlet.Do {
             let! res = 
                 formlet
@@ -33,7 +32,12 @@ module Tests =
                         ]
                 )
         }
-        
+        |> Formlet.MapElement (fun el ->
+            
+            Div [Attr.Style "border: 1px solid gray; margin: 10px; padding: 10px;"] -< [
+                el
+            ]
+        )
 
 
     // TESTED
@@ -248,23 +252,57 @@ module Tests =
 
     [<JavaScript>]
     let TestSubmitAndResetButtons =
-        let f =
-            Controls.Input ""
-            |> Validator.IsEmail ""
+        
+        let valid = 
+            Controls.Input "Valid"
+
+        let invalid =
+            Controls.Input "Must be int" 
+            |> Validator.IsInt "" 
             |> Enhance.WithValidationIcon
-        let f1 =
-            Inspect (
-                Enhance.WithSubmitButton "Submit" f
-            )
-        let f2 =
-            Inspect (
-                Enhance.WithSubmitAndResetButtons "Submit" "Reset" f
-            )
-        let f3 =
-            Inspect (
-                Enhance.WithResetButton "Reset" f
-            )
-        [ f1 ; f2 ; f3 ]
+
+        let delayed =
+            Controls.Button "Click"
+
+        [
+
+            valid
+            |> Enhance.WithSubmitButton "Submit"
+            |> Inspect
+
+            valid
+            |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+            |> Inspect
+
+            valid
+            |> Enhance.WithResetButton "Reset"
+            |> Inspect
+
+            invalid
+            |> Enhance.WithSubmitButton "Submit"
+            |> Inspect
+
+            invalid
+            |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+            |> Inspect
+
+            invalid
+            |> Enhance.WithResetButton "Reset"
+            |> Inspect
+
+            delayed
+            |> Enhance.WithSubmitButton "Submit"
+            |> Inspect
+
+            delayed
+            |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+            |> Inspect
+
+            delayed
+            |> Enhance.WithResetButton "Reset"
+            |> Inspect
+
+        ]
         |> Formlet.Sequence
         |> Formlet.Map ignore
 
