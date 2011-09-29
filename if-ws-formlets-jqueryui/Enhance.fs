@@ -209,3 +209,32 @@ module Enhance =
         |> Formlet.MapElement (fun el -> 
             Div [Attr.Class CC.FormContainerClass] -< [el]
         )
+
+    [<JavaScript>]
+    let WithDialog (title: string) (formlet: Formlet<'T>) =
+        Formlet.BuildFormlet <| fun _ ->
+            let state = new Event<_>()
+            let conf =
+                JQueryUI.DialogConfiguration (
+                    modal = true,
+                    dialogClass = "dialog",
+                    title = title
+                )
+            let dialogOpt : ref<option<JQueryUI.Dialog>> = 
+                ref None
+            let el =
+                Div [
+                    formlet
+                    |> Formlet.Run (fun confirmed ->
+                        match dialogOpt.Value with
+                        | Some dialog ->
+                            state.Trigger (Result.Success confirmed)
+                            dialog.Close()
+                        | None ->
+                            ()
+                    )
+                ]
+            let dialog = 
+                JQueryUI.Dialog.New(el, conf)
+            dialogOpt := Some dialog
+            Div [dialog] , ignore , state.Publish

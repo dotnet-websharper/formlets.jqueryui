@@ -100,7 +100,7 @@ module Tests =
             "Tab 2", Controls.TextArea ""
             "Tab 3", Controls.TextArea ""
         ]
-        |> Controls.TabsChoose
+        |> Controls.TabsChoose 2
 
     [<JavaScript>]
     let TestSlider =
@@ -137,10 +137,11 @@ module Tests =
             "Tab 2", Controls.TextArea ""
             "Tab 3", Controls.TextArea ""
         ]
-        |> Controls.TabsList
+        |> Controls.TabsList 2
         |> Formlet.Map (fun xs ->
             List.fold (fun x y-> x + "," + y) "" xs
         )
+        |> Enhance.WithSubmitAndResetButtons "S" "R"
 
 
     [<JavaScript>]
@@ -303,13 +304,34 @@ module Tests =
             |> Inspect
 
             // Bugzilla 490
-            [   
+            [
                 ("tab1", Controls.Input "" |> Validator.IsNotEmpty "")
                 ("tab2", Controls.Input "" |> Validator.IsNotEmpty "")
             ]
-            |> Controls.TabsChoose
+            |> Controls.TabsChoose 0
             |> Inspect
 
+        ]
+        |> Formlet.Sequence
+        |> Formlet.Map ignore
+
+    [<JavaScript>]
+    let TestWithDialog =
+        [
+            Controls.Input "X"
+            |> Enhance.WithDialog "Title"
+            |> Inspect
+
+            Formlet.Do {
+                let! x = Controls.Button "Show"
+                return!
+                    Controls.Input ""
+                    |> Enhance.WithSubmitAndResetButtons "S" "R"
+                    |> Enhance.WithDialog "Title"
+
+            }
+            |> Enhance.WithSubmitAndResetButtons "S" "R"
+            |> Inspect
         ]
         |> Formlet.Sequence
         |> Formlet.Map ignore
@@ -330,8 +352,9 @@ module Tests =
             "Sortable" , Inspect TestSortable
             "Composed", Inspect TestComposed
             "Submit and Reset" , TestSubmitAndResetButtons
+            "Test WithDialog" , TestWithDialog
         ]
-        |> Controls.TabsList
+        |> Controls.TabsList 0
         |> Formlet.Map ignore
         |> Enhance.WithFormContainer
 
