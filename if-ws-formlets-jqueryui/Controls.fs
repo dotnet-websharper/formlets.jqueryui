@@ -404,7 +404,7 @@ module Controls =
 
     /// Constructs an Tabs formlet, displaying the given list of formlets on separate tabs.
     [<JavaScript>]
-    let TabsList (fs: list<string * Formlet<'T>>) : Formlet<list<'T>> =
+    let TabsList defIndex (fs: list<string * Formlet<'T>>) : Formlet<list<'T>> =
         MkFormlet <| fun () ->
             let fs =
                 fs
@@ -421,18 +421,22 @@ module Controls =
                     Result.Sequence rs
 
                 )
-            let tabs =
-                fs
-                |> List.map (fun (label, _, elem) -> label , elem)
-                |> JQueryUI.Tabs.New
-
-            let reset () =
-                tabs.Select 0
+            let reset (tabs: JQueryUI.Tabs) =
+                tabs.Select defIndex
                 fs
                 |> List.iter (fun (_,f,_) ->
                     f.Notify null
                 )
-            tabs, reset , state
+
+            let tabs =
+                fs
+                |> List.map (fun (label, _, elem) -> label , elem)
+                |> JQueryUI.Tabs.New
+                |>! OnAfterRender (fun tabs->
+                    reset tabs
+                )
+
+            tabs, (fun _ -> reset tabs) , state
 
     [<Inline "jQuery($tabs.element.el).tabs({select: function(x,ui){$f(ui.index)}})">]
     let private onSelect tabs (f : int -> unit) = ()
@@ -444,7 +448,7 @@ module Controls =
 
 
     [<JavaScript>]
-    let TabsChoose (fs: list<string * Formlet<'T>>) : Formlet<'T> =
+    let TabsChoose defIndex (fs: list<string * Formlet<'T>>) : Formlet<'T> =
         MkFormlet <| fun () ->
             // Keep track of last results
             let res = Array.zeroCreate fs.Length
@@ -466,8 +470,8 @@ module Controls =
 
             let reset (tabs: JQueryUI.Tabs) =
                 fs |> Array.iter (fun (_,_,n,_) -> n null)
-                tabs.Select 0
-                update 0
+                tabs.Select defIndex
+                update defIndex
 
             let tabs =
                 fs

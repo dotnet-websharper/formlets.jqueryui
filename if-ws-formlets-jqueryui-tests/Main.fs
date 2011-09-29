@@ -44,65 +44,6 @@ module J =
             dialogOpt := Some dialog
             Div [dialog] , ignore , state.Publish
 
-
-    /// Given a sequenec of formlets, returns a formlet whose result
-    /// is the last triggered formlet value of any of the
-    /// formlets of the sequence.
-    [<JavaScript>]
-    let Choose (fs : seq<Formlet<'T>>) =
-        let count = ref 0
-        fs
-        |> Seq.map (fun f ->
-            f
-            |> Formlet.Map (fun x ->
-                incr count
-                (x,count.Value)
-            )
-            |> Formlet.InitWithFailure
-            |> Formlet.LiftResult
-        )
-        |> Formlet.Sequence
-        |> Formlet.Map (fun xs ->
-            xs
-            |> List.choose (fun x ->
-                match x with
-                | Result.Success v  -> Some v
-                | _                 -> None
-            )
-            |> List.sortBy (fun (_,ix) -> ix)
-            |> List.rev
-            |> List.tryPick (fun (x,_) -> Some x)
-        )
-        |> Validator.Is (fun x -> Option.isSome x) ""
-        |> Formlet.Map (fun x -> x.Value)
-    
-    [<JavaScript>]
-    let YesNo () =
-        [
-            Controls.Button "Yes" |> Formlet.Map (fun _ -> true)
-            Controls.Button "No" |> Formlet.Map (fun _ -> false)
-        ]
-        |> Choose
-        |> Formlet.Horizontal
-
-    let confirmationForm order =
-        let title = DialogConfiguration(title = "Are you sure you want to place the order?")
-        let form = 
-            Formlet.Return ()
-            |> Enhance.WithCustomSubmitAndResetButtons
-                { Enhance.FormButtonConfiguration.Default with Label = Some "Yes" }
-                { Enhance.FormButtonConfiguration.Default with Label = Some "No" }
-            |> Enhance.WithFormContainer
-        let rec dialog = Dialog.New(Div [ result ], title)
-        and result =
-            Formlet.Do {
-                let! _ = form |> Enhance.WithResetAction (fun _ -> dialog.Close(); true)
-                dialog.Close()
-                return true
-            } 
-            |> Enhance.WithFormContainer
-        (dialog :> IPagelet).Render()
-
     [<JavaScript>]
     let Main () =
         Formlet.Do {
