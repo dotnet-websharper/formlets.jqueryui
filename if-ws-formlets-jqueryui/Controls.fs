@@ -68,7 +68,8 @@ module Controls =
 
             Div [dialog], reset , state.Publish
 
-    /// Constructs an Accordion formlet, displaying the given list of formlets on separate tabs.
+    /// Constructs an Accordion formlet, displaying
+    /// the given list of formlets on separate tabs.
     [<JavaScript>]
     let AccordionList (fs: list<string * Formlet<'T>>) : Formlet<list<'T>> =
         MkFormlet <| fun () ->
@@ -276,7 +277,6 @@ module Controls =
                     Range = Bool false
                 }
 
-    /// ...
     [<JavaScript>]
     let Slider (conf: option<SliderConfiguration>) : Formlet<list<int>> =
         MkFormlet <| fun () ->
@@ -456,33 +456,34 @@ module Controls =
                 )
                 |> Array.ofList
 
+            let states = Event<_>()
+
+            let state = Reactive.Switch states.Publish
+
+            let update index =
+                let (_, s, _, _) = fs.[index]
+                states.Trigger s
+
+            let reset (tabs: JQueryUI.Tabs) =
+                fs |> Array.iter (fun (_,_,n,_) -> n null)
+                tabs.Select 0
+                update 0
+
             let tabs =
                 fs
                 |> Array.map (fun (label, _, _, elem) -> label , elem)
                 |> List.ofArray
                 |> JQueryUI.Tabs.New
-
-            let state = Event<_>()
-            let update index =
-                let (_, s, _, _) = fs.[index]
-                state.Trigger s
-
+                |>! OnAfterRender (fun tabs ->
+                    reset tabs
+                )
             OnSelect tabs update
-
-            let reset () =
-                fs |> Array.iter (fun (_,_,n,_) -> n null)
-                tabs.Select 0
-                update 0
-
 
             tabs.OnSelect (fun ev ui->
                 update ui.index
             )
 
-            // Initialize reset
-            let tabs =
-                tabs |>! OnAfterRender (fun _ -> reset ())
-            tabs, reset , Reactive.Switch state.Publish
+            tabs, (fun _ -> reset tabs) , state
 
 
     type private Dr =

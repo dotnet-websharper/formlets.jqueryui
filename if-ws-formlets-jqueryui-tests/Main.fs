@@ -7,85 +7,125 @@ open IntelliFactory.WebSharper
 
 open IntelliFactory.WebSharper.Formlet
 open IntelliFactory.WebSharper.Formlet.JQueryUI
+open IntelliFactory.WebSharper.JQueryUI
 
 module F =
     [<Inline "console.log($x)">]
     let Log x = ()
 
-module JQueryFormlet =
-
-    open IntelliFactory.Formlet.Base
+module J =
 
     [<JavaScript>]
-    let J () =
-        let form = 
-            Controls.Datepicker (Some <| EcmaScript.Date())
-            |> Formlet.BuildForm
+    let InDialog (title: string) (formlet: Formlet<'T>) =
+        Formlet.BuildFormlet <| fun _ ->
+            let state = new Event<_>()
+            let conf =
+                JQueryUI.DialogConfiguration (
+                    modal = true,
+                    dialogClass = "dialog",
+                    title = title
+                )
+            let dialogOpt : ref<option<JQueryUI.Dialog>> = 
+                ref None
+            let el =
+                Div [
+                    formlet
+                    |> Formlet.Run (fun confirmed ->
+                        match dialogOpt.Value with
+                        | Some dialog ->
+                            state.Trigger (Result.Success confirmed)
+                            dialog.Close()
+                        | None ->
+                            ()
+                    )
+                ]
+            let dialog = 
+                JQueryUI.Dialog.New(el, conf)
+            dialogOpt := Some dialog
+            Div [dialog] , ignore , state.Publish
 
-        form.State.Subscribe (fun res ->
-            match res with
-            | Result.Failure fs ->
-                F.Log ("Failure_", fs)
-            | Result.Success x ->
-                F.Log ("Success_", x)
-        )
-        |> ignore
 
-        Div []
-        |>! OnAfterRender (fun el ->
-            form.Body.Subscribe (fun edit ->
-                match edit with
-                | Tree.Edit.Replace t ->
-                    match t with
-                    | Tree.Leaf x ->
-                        el.Append (x.Element)
-                    | _ -> 
-                        ()
-                | _ ->
-                    ()
+    /// Given a sequenec of formlets, returns a formlet whose result
+    /// is the last triggered formlet value of any of the
+    /// formlets of the sequence.
+    [<JavaScript>]
+    let Choose (fs : seq<Formlet<'T>>) =
+        let count = ref 0
+        fs
+        |> Seq.map (fun f ->
+            f
+            |> Formlet.Map (fun x ->
+                incr count
+                (x,count.Value)
             )
-            |> ignore
+            |> Formlet.InitWithFailure
+            |> Formlet.LiftResult
         )
+        |> Formlet.Sequence
+        |> Formlet.Map (fun xs ->
+            xs
+            |> List.choose (fun x ->
+                match x with
+                | Result.Success v  -> Some v
+                | _                 -> None
+            )
+            |> List.sortBy (fun (_,ix) -> ix)
+            |> List.rev
+            |> List.tryPick (fun (x,_) -> Some x)
+        )
+        |> Validator.Is (fun x -> Option.isSome x) ""
+        |> Formlet.Map (fun x -> x.Value)
+    
+    [<JavaScript>]
+    let YesNo () =
+        [
+            Controls.Button "Yes" |> Formlet.Map (fun _ -> true)
+            Controls.Button "No" |> Formlet.Map (fun _ -> false)
+        ]
+        |> Choose
+        |> Formlet.Horizontal
 
-
+    let confirmationForm order =
+        let title = DialogConfiguration(title = "Are you sure you want to place the order?")
+        let form = 
+            Formlet.Return ()
+            |> Enhance.WithCustomSubmitAndResetButtons
+                { Enhance.FormButtonConfiguration.Default with Label = Some "Yes" }
+                { Enhance.FormButtonConfiguration.Default with Label = Some "No" }
+            |> Enhance.WithFormContainer
+        let rec dialog = Dialog.New(Div [ result ], title)
+        and result =
+            Formlet.Do {
+                let! _ = form |> Enhance.WithResetAction (fun _ -> dialog.Close(); true)
+                dialog.Close()
+                return true
+            } 
+            |> Enhance.WithFormContainer
+        (dialog :> IPagelet).Render()
 
     [<JavaScript>]
-    let Main () = 
-        let f1 =
-            Controls.InputDatepicker (Some <| EcmaScript.Date())
-            |> Enhance.WithSubmitAndResetButtons "S" "R"
-            |> Tests.Inspect
+    let Main () =
+        Formlet.Do {
+            let! _ =  Controls.Button "Show"
+            let! name = 
+                Controls.Input ""
+                |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+                |> InDialog "Enter your name" 
+            return ()
+        }
+        |> Enhance.WithFormContainer
 
-        let f2 =
-            Controls.InputDatepicker None
-            |> Enhance.WithSubmitAndResetButtons "S" "R"
-            |> Tests.Inspect
-        
-        let f3 =
-            Controls.Datepicker (Some <| EcmaScript.Date())
-            |> Enhance.WithSubmitAndResetButtons "S" "R"
-            |> Tests.Inspect
+    [<JavaScript>]
+    let RX = Formlet.Data.UtilsProvider().Reactive
 
-        let f4 =
-            Controls.Datepicker None
-            |> Enhance.WithSubmitAndResetButtons "S" "R"
-            |> Tests.Inspect
-
-        Div [
-            f1
-            f2
-            f3
-            f4
-        ]
+    [<JavaScript>]
+    let RMap f s= RX.Select s f
 
 [<Sealed>]
 type SampleControl () =
     inherit Web.Control()
 
     [<JavaScript>]
-    override this.Body = 
-        Tests.AllTests () :> _
-        //JQueryFormlet.Main () :> _
-
-
-
+    override this.Body =
+        Tests.AllTests ()
+        :> _

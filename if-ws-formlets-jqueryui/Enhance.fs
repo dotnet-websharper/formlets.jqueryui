@@ -44,10 +44,22 @@ module Enhance =
         BaseFormlet.New <| fun _ ->
             
             // Submit button
+            
             let submitButton = 
                 submitLabel
                 |> Option.map (fun label ->
-                    JQueryUI.Button.New (label)
+                    let isRendered = ref false
+                    let button =
+                        JQueryUI.Button.New (
+                            JQueryUI.ButtonConfiguration(
+                                disabled = true,
+                                label = label
+                            )
+                        )
+                        |>! OnAfterRender (fun _ ->
+                            isRendered := true
+                        )
+                    button, isRendered
                 )
 
             // Reset button
@@ -61,7 +73,7 @@ module Enhance =
                 {
                     Label = None
                     Element = 
-                        [submitButton; resetButton]
+                        [Option.map fst submitButton; resetButton]
                         |> List.choose id
                         |> Div
                 }
@@ -69,27 +81,28 @@ module Enhance =
             // Build the form
             let form = Formlet.BuildForm formlet
 
-            // Enable/Disable button depending on state
-            submitButton
-            |> Option.iter (fun button ->
-                button
-                |> OnAfterRender (fun _ ->
-                    button.Disable ()
-                    form.State.Subscribe (fun res ->
-                        match res with
-                        | Result.Success _ ->
-                            button.Enable ()
-                        | Result.Failure fs ->
-                            button.Disable ()
-                    )
-                    |> ignore
+            form.State.Subscribe (fun res ->
+                submitButton
+                |> Option.iter (fun (button , isRendered)->
+                    match res with
+                    | Result.Success _ ->
+                        if isRendered.Value then
+                            button.Enable()
+                        else
+                            button
+                            |> OnAfterRender (fun _ ->
+                                button.Enable()
+                            )
+                    | Result.Failure fs ->
+                        button.Disable ()
                 )
             )
+            |> ignore
 
             // State of the formlet
             let state =
                 match submitButton with
-                | Some button ->
+                | Some (button, _) ->
                     let count = ref 0
                     let submitButtonClickState = new Event<int>()
                     button.OnClick (fun _ ->
@@ -122,7 +135,7 @@ module Enhance =
                     form.Body
                     |> RMap Tree.Edit.Left
                 RX.Merge left right
-            
+
             // Reset function
             let reset x =
                 form.Notify x
@@ -134,7 +147,6 @@ module Enhance =
                     reset ()
                 )
             )
-
             {
                 Body = body
                 Dispose = fun () -> ()
