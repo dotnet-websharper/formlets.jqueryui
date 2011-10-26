@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ivy-module version="2.0">
-  <info organisation="IntelliFactory" module="if-ws-formlets-jqueryui-2.4" revision="2.4" />
+  <info organisation="IntelliFactory" module="if-ws-formlets-jqueryui" revision="2.4" />
   <publications>
     <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="dll" type="bin" />
     <artifact name="IntelliFactory.WebSharper.Formlet.JQueryUI" ext="xml" type="doc" />
@@ -8,12 +8,12 @@
     <artifact name="if-ws-formlets-jqueryui-docs" ext="zip" type="doc" />
   </publications>
   <dependencies>
-    <dependency name="if-ws-2.4" rev="latest.integration" branch="2.4" />
-    <dependency name="if-ws-ecma-2.4" rev="latest.integration" branch="2.4" />
-    <dependency name="if-formlet-2.4" rev="latest.integration" branch="2.4" />
-    <dependency name="if-ws-formlets-2.4" rev="latest.integration" branch="2.4" />
-    <dependency name="if-ws-control-2.4" rev="latest.integration" branch="2.4" />
-    <dependency name="if-ws-collections-2.4" rev="latest.integration" branch="2.4" />
-    <dependency name="if-ws-jqueryui-2.4" rev="latest.integration" branch="2.4" />
+    <dependency name="if-ws" rev="latest.integration" />
+    <dependency name="if-ws-ecma" rev="latest.integration" />
+    <dependency name="if-formlet" rev="latest.integration" />
+    <dependency name="if-ws-formlets" rev="latest.integration" />
+    <dependency name="if-ws-control" rev="latest.integration" />
+    <dependency name="if-ws-collections" rev="latest.integration" />
+    <dependency name="if-ws-jqueryui" rev="latest.integration" />
   </dependencies>
 </ivy-module>
