@@ -1,0 +1,6 @@
+(bin|obj)/(Debug|Release)
+[.]build
+[.](user|suo)$
+Sample
+web/bin
+web/Scripts
