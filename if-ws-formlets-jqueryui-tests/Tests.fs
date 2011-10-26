@@ -12,7 +12,6 @@ module Tests =
 
     [<JavaScript>]
     let Inspect (formlet: Formlet<'T>) =
-        
         Formlet.Do {
             let! res = 
                 formlet
@@ -33,7 +32,12 @@ module Tests =
                         ]
                 )
         }
-        
+        |> Formlet.MapElement (fun el ->
+            
+            Div [Attr.Style "border: 1px solid gray; margin: 10px; padding: 10px;"] -< [
+                el
+            ]
+        )
 
 
     // TESTED
@@ -96,7 +100,7 @@ module Tests =
             "Tab 2", Controls.TextArea ""
             "Tab 3", Controls.TextArea ""
         ]
-        |> Controls.TabsChoose
+        |> Controls.TabsChoose 2
 
     [<JavaScript>]
     let TestSlider =
@@ -133,10 +137,11 @@ module Tests =
             "Tab 2", Controls.TextArea ""
             "Tab 3", Controls.TextArea ""
         ]
-        |> Controls.TabsList
+        |> Controls.TabsList 2
         |> Formlet.Map (fun xs ->
             List.fold (fun x y-> x + "," + y) "" xs
         )
+        |> Enhance.WithSubmitAndResetButtons "S" "R"
 
 
     [<JavaScript>]
@@ -248,23 +253,86 @@ module Tests =
 
     [<JavaScript>]
     let TestSubmitAndResetButtons =
-        let f =
-            Controls.Input ""
-            |> Validator.IsEmail ""
+        
+        let valid = 
+            Controls.Input "Valid"
+
+        let invalid =
+            Controls.Input "Must be int" 
+            |> Validator.IsInt "" 
             |> Enhance.WithValidationIcon
-        let f1 =
-            Inspect (
-                Enhance.WithSubmitButton "Submit" f
-            )
-        let f2 =
-            Inspect (
-                Enhance.WithSubmitAndResetButtons "Submit" "Reset" f
-            )
-        let f3 =
-            Inspect (
-                Enhance.WithResetButton "Reset" f
-            )
-        [ f1 ; f2 ; f3 ]
+
+        let delayed =
+            Controls.Button "Click"
+
+        [
+
+            valid
+            |> Enhance.WithSubmitButton "Submit"
+            |> Inspect
+
+            valid
+            |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+            |> Inspect
+
+            valid
+            |> Enhance.WithResetButton "Reset"
+            |> Inspect
+
+            invalid
+            |> Enhance.WithSubmitButton "Submit"
+            |> Inspect
+
+            invalid
+            |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+            |> Inspect
+
+            invalid
+            |> Enhance.WithResetButton "Reset"
+            |> Inspect
+
+            delayed
+            |> Enhance.WithSubmitButton "Submit"
+            |> Inspect
+
+            delayed
+            |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+            |> Inspect
+
+            delayed
+            |> Enhance.WithResetButton "Reset"
+            |> Inspect
+
+            // Bugzilla 490
+            [
+                ("tab1", Controls.Input "" |> Validator.IsNotEmpty "")
+                ("tab2", Controls.Input "" |> Validator.IsNotEmpty "")
+            ]
+            |> Controls.TabsChoose 0
+            |> Inspect
+
+        ]
+        |> Formlet.Sequence
+        |> Formlet.Map ignore
+
+    [<JavaScript>]
+    let TestWithDialog =
+        [
+            Controls.Input "X"
+            |> Enhance.WithDialog "Title"
+            |> Inspect
+
+            Formlet.Do {
+                let! x = Controls.Button "Show"
+                return!
+                    Controls.Input ""
+                    |> Enhance.WithSubmitAndResetButtons "S" "R"
+                    |> Enhance.WithDialog "Title"
+
+            }
+            |> Enhance.WithSubmitAndResetButtons "S" "R"
+            |> Inspect
+        ]
         |> Formlet.Sequence
         |> Formlet.Map ignore
 
@@ -284,8 +352,9 @@ module Tests =
             "Sortable" , Inspect TestSortable
             "Composed", Inspect TestComposed
             "Submit and Reset" , TestSubmitAndResetButtons
+            "Test WithDialog" , TestWithDialog
         ]
-        |> Controls.TabsList
+        |> Controls.TabsList 0
         |> Formlet.Map ignore
         |> Enhance.WithFormContainer
 

@@ -23,14 +23,14 @@ module Controls =
         MkFormlet <| fun () ->
             let state = State<int>.New()
             let count = ref 0
-            let button = 
-                let genEl () = Button[Text conf.Label]
+            let button =
+                let genEl () = Button[Text conf.label]
                 JQueryUI.Button.New(genEl, conf)
             // Make sure to try to render the button
             try
                 (button :> IPagelet).Render()
             with
-            | _ -> 
+            | _ ->
                 ()
 
             button.OnClick(fun _ ->
@@ -47,7 +47,7 @@ module Controls =
     /// the button is clicked.
     [<JavaScript>]
     let Button (label : string) =
-        JQueryUI.ButtonConfiguration(Label = label)
+        JQueryUI.ButtonConfiguration(label = label)
         |> CustomButton
 
     [<JavaScript>]
@@ -68,18 +68,19 @@ module Controls =
 
             Div [dialog], reset , state.Publish
 
-    /// Constructs an Accordion formlet, displaying the given list of formlets on separate tabs.
+    /// Constructs an Accordion formlet, displaying
+    /// the given list of formlets on separate tabs.
     [<JavaScript>]
     let AccordionList (fs: list<string * Formlet<'T>>) : Formlet<list<'T>> =
         MkFormlet <| fun () ->
-            let fs = 
-                fs 
-                |> List.map (fun (l,f) -> 
+            let fs =
+                fs
+                |> List.map (fun (l,f) ->
                     let form, elem = Utils.FormAndElement f
                     l, form, elem
                 )
             let state =
-                let state = 
+                let state =
                     fs
                     |> List.map (fun (_,f,_) -> f.State)
                     |> Reactive.Sequence
@@ -91,11 +92,11 @@ module Controls =
                 fs
                 |> List.map (fun (label, _, elem) -> label , elem)
                 |> JQueryUI.Accordion.New
-                
+
             let reset () =
                 acc.Activate 0
-                fs 
-                |> List.iter (fun (_,f,_) -> 
+                fs
+                |> List.iter (fun (_,f,_) ->
                     f.Notify null
                 )
             acc, reset , state
@@ -104,16 +105,16 @@ module Controls =
 
     [<Inline "jQuery($acc).accordion('option','active')">]
     let private ActiveAccordionIndex acc = 0
-    
+
     /// Constructs an Accordion formlet, displaying the given list of formlets on separate tabs.
     [<JavaScript>]
     let AccordionChoose (fs: list<string * Formlet<'T>>) : Formlet<'T> =
         MkFormlet <| fun () ->
             // Keep track of last results
             let res = Array.zeroCreate fs.Length
-            let fs = 
-                fs 
-                |> List.mapi (fun ix (l,f) -> 
+            let fs =
+                fs
+                |> List.mapi (fun ix (l,f) ->
                     let form, elem = Utils.FormAndElement f
                     l, (Reactive.Heat form.State), form.Notify, elem
                 )
@@ -133,7 +134,7 @@ module Controls =
             and update index =
                 let (_, s, _, _) = fs.[index]
                 state.Trigger s
-                            
+
             and reset () =
                 fs |> Array.iter (fun (_,_,n,_) -> n null)
                 accordion.Activate 0
@@ -148,7 +149,7 @@ module Controls =
             )
 
             // State
-            let state = 
+            let state =
                 Reactive.Switch state.Publish
 
             accordion, reset , state
@@ -159,12 +160,12 @@ module Controls =
         MkFormlet <| fun () ->
             let state = State<string>.New(def)
             let input = Input [Attr.Value def]
-            let upd () = 
+            let upd () =
                 Success input.Value
                 |> state.Trigger
 
             // Update on key up events
-            input 
+            input
             |> Events.OnKeyUp (fun el _ ->
                 upd ()
             )
@@ -173,21 +174,21 @@ module Controls =
             |> Events.OnChange (fun _ ->
                 upd ()
             )
-            let ac = 
+            let ac =
                 JQueryUI.Autocomplete.New(
-                    input , 
+                    input ,
                     JQueryUI.AutocompleteConfiguration(
-                        Source = Array.ofSeq source
+                        source = Array.ofSeq source
                     )
                 )
 
-            ac.OnChange(fun ev el -> 
+            ac.OnChange(fun ev el ->
                 upd ()
             )
             let reset () =
                 input.Value <- def
                 state.Trigger (Success def)
-            
+
             ac, reset, state
 
     [<JavaScript>]
@@ -198,7 +199,7 @@ module Controls =
                     None
                 else
                     Some <| Input []
-            let date = 
+            let date =
                 match inp with
                 | None ->
                     JQueryUI.Datepicker.New()
@@ -206,7 +207,7 @@ module Controls =
                     JQueryUI.Datepicker.New inp
 
 
-            let state = 
+            let state =
                 match def with
                 | Some date -> State<EcmaScript.Date>.New(date)
                 | None      -> State<_>.New()
@@ -226,7 +227,7 @@ module Controls =
                     | None      -> ()
                     state.Trigger (Failure [])
 
-            date 
+            date
             |> OnAfterRender (fun _ ->
                 reset ()
             )
@@ -242,9 +243,8 @@ module Controls =
         DatepickerInput false def
 
     type Orientation =
-        | [<Name "vertical">] Vertical
-        | [<Name "horizontal">] Horizontal
-    
+        | [<Constant "vertical">] Vertical
+        | [<Constant "horizontal">] Horizontal
 
     type RangeConfig =
         | Bool of bool
@@ -261,8 +261,8 @@ module Controls =
             Width : option<int>
             Height : option<int>
             Range : RangeConfig
-            
-        }         
+        }
+
         with
             [<JavaScript>]
             static member Default =
@@ -277,7 +277,6 @@ module Controls =
                     Range = Bool false
                 }
 
-    /// ...
     [<JavaScript>]
     let Slider (conf: option<SliderConfiguration>) : Formlet<list<int>> =
         MkFormlet <| fun () ->
@@ -285,36 +284,34 @@ module Controls =
                 match conf with
                 | Some c    -> c
                 | None      -> SliderConfiguration.Default
-            
-            let jqConf = 
+            let jqConf =
                 JQueryUI.SliderConfiguration (
-                    Animate = conf.Animate,
-                    Values = conf.Values,
-                    Min = conf.Min,
-                    Max = conf.Max
+                    animate = conf.Animate,
+                    values = conf.Values,
+                    min = conf.Min,
+                    max = conf.Max
                 )
             match conf.Range with
             | RangeConfig.Bool b ->
-                jqConf.Range <- b
+                jqConf.range <- b
             | RangeConfig.Max ->
-                jqConf.Range <- "max"
+                jqConf.range <- "max"
             | RangeConfig.Min ->
-                jqConf.Range <- "min"
+                jqConf.range <- "min"
 
             match conf.Orientation with
             | Orientation.Horizontal ->
-                jqConf.Orientation <- "horizontal"
+                jqConf.orientation <- "horizontal"
             | Orientation.Vertical ->
-                jqConf.Orientation <- "vertical"
-
+                jqConf.orientation <- "vertical"
 
             let style =
                 let width w = "width: " + (string w) + "px;"
                 let height h = "height: " + (string h) + "px;"
                 match conf.Width, conf.Height with
-                | Some w, Some h -> 
+                | Some w, Some h ->
                     [Attr.Style (width w + height h)]
-                | Some w, None -> 
+                | Some w, None ->
                     [Attr.Style (width w)]
                 | None, Some h ->
                     [Attr.Style (height h)]
@@ -326,25 +323,25 @@ module Controls =
             slider.OnChange(fun _ ->
                 slider.Values
                 |> List.ofArray
-                |> Success 
+                |> Success
                 |> state.Trigger
             )
             let reset () =
                 slider.Values <- conf.Values
                 conf.Values
                 |> List.ofArray
-                |> Success 
-                |> state.Trigger 
-            
-            let slider = 
+                |> Success
+                |> state.Trigger
+
+            let slider =
                 Div style -< [slider]
-                |>! OnAfterRender (fun _ -> 
+                |>! OnAfterRender (fun _ ->
                     reset ()
                 )
             slider, reset, state
-            
+
     open System
-    
+
     [<Inline "jQuery($list.element.Body).sortable('toArray')">]
     let private ToArray list =  [||]
 
@@ -359,7 +356,7 @@ module Controls =
             let dict = System.Collections.Generic.Dictionary<string,  IObservable<Result<'T>> >()
             let stateEv = Event<list<string>>()
             let state =
-                Reactive.Select stateEv.Publish (fun ids -> 
+                Reactive.Select stateEv.Publish (fun ids ->
                     let x =
                         ids
                         |> List.map (fun id -> dict.[id])
@@ -367,9 +364,9 @@ module Controls =
                     Reactive.Select x List.ofSeq
                 )
                 |> Reactive.Switch
-            
+
             let state = Reactive.Select state Result.Sequence
-                            
+
             let list = OL [Attr.Style "list-style-type: none; margin: 0; padding: 0;"];
             let stopEv = Event<_>()
             let config  = {stop = fun _ -> stopEv.Trigger ()}
@@ -393,101 +390,106 @@ module Controls =
 
                     let id = NewId ()
                     dict.[id] <- Reactive.Heat form.State
-                    let icon = Span [Attr.Class "ui-icon ui-icon-arrowthick-2-n-s"] 
+                    let icon = Span [Attr.Class "ui-icon ui-icon-arrowthick-2-n-s"]
                     let tbl = Table [TBody [TR [TD [icon] ; TD [ elem]]]]
                     LI [Attr.Id id] -< [tbl]
-                    
-                    
+
+
                 )
                 |> List.iter (fun el -> list.Append el)
                 update ()
 
             let list = list |>! OnAfterRender (fun _ -> reset ())
             list, reset, state
-    
+
     /// Constructs an Tabs formlet, displaying the given list of formlets on separate tabs.
     [<JavaScript>]
-    let TabsList (fs: list<string * Formlet<'T>>) : Formlet<list<'T>> =
+    let TabsList defIndex (fs: list<string * Formlet<'T>>) : Formlet<list<'T>> =
         MkFormlet <| fun () ->
-            let fs = 
-                fs 
-                |> List.map (fun (l,f) -> 
+            let fs =
+                fs
+                |> List.map (fun (l,f) ->
                     let (form, elem) = Utils.FormAndElement f
                     l, form, elem
-                )            
+                )
             let state =
-                let state = 
+                let state =
                     fs
                     |> List.map (fun (_,f,_) -> f.State)
                     |> Reactive.Sequence
                 Reactive.Select state (fun rs ->
                     Result.Sequence rs
-                    
-                )   
+
+                )
+            let reset (tabs: JQueryUI.Tabs) =
+                tabs.Select defIndex
+                fs
+                |> List.iter (fun (_,f,_) ->
+                    f.Notify null
+                )
+
             let tabs =
                 fs
                 |> List.map (fun (label, _, elem) -> label , elem)
                 |> JQueryUI.Tabs.New
-                
-            let reset () =
-                tabs.Select 0
-                fs 
-                |> List.iter (fun (_,f,_) -> 
-                    f.Notify null
+                |>! OnAfterRender (fun tabs->
+                    reset tabs
                 )
-            tabs, reset , state
+
+            tabs, (fun _ -> reset tabs) , state
 
     [<Inline "jQuery($tabs.element.el).tabs({select: function(x,ui){$f(ui.index)}})">]
     let private onSelect tabs (f : int -> unit) = ()
 
     [<JavaScript>]
-    let private OnSelect tabs f = 
+    let private OnSelect tabs f =
         tabs
         |> OnAfterRender (fun _ -> onSelect tabs f)
-    
+
 
     [<JavaScript>]
-    let TabsChoose (fs: list<string * Formlet<'T>>) : Formlet<'T> =
+    let TabsChoose defIndex (fs: list<string * Formlet<'T>>) : Formlet<'T> =
         MkFormlet <| fun () ->
             // Keep track of last results
             let res = Array.zeroCreate fs.Length
-            let fs = 
-                fs 
-                |> List.mapi (fun ix (l,f) -> 
+            let fs =
+                fs
+                |> List.mapi (fun ix (l,f) ->
                     let form, elem = Utils.FormAndElement f
                     l, (Reactive.Heat form.State), form.Notify, elem
                 )
                 |> Array.ofList
-            
+
+            let states = Event<_>()
+
+            let state = Reactive.Switch states.Publish
+
+            let update index =
+                let (_, s, _, _) = fs.[index]
+                states.Trigger s
+
+            let reset (tabs: JQueryUI.Tabs) =
+                fs |> Array.iter (fun (_,_,n,_) -> n null)
+                tabs.Select defIndex
+                update defIndex
+
             let tabs =
                 fs
                 |> Array.map (fun (label, _, _, elem) -> label , elem)
                 |> List.ofArray
                 |> JQueryUI.Tabs.New
-            
-            let state = Event<_>()
-            let update index =
-                let (_, s, _, _) = fs.[index]
-                state.Trigger s
-                
+                |>! OnAfterRender (fun tabs ->
+                    reset tabs
+                )
             OnSelect tabs update
-                
-            let reset () =
-                fs |> Array.iter (fun (_,_,n,_) -> n null)
-                tabs.Select 0
-                update 0
-
 
             tabs.OnSelect (fun ev ui->
                 update ui.index
             )
 
-            // Initialize reset
-            let tabs = 
-                tabs |>! OnAfterRender (fun _ -> reset ())
-            tabs, reset , Reactive.Switch state.Publish
+            tabs, (fun _ -> reset tabs) , state
 
-    
+
     type private Dr =
         {
             draggable : JQuery
@@ -497,8 +499,8 @@ module Controls =
             accept : string
             drop:   JQuery.Event * Dr -> unit
         }
-    
-    type DragAndDropConfig = 
+
+    type DragAndDropConfig =
         {
             AcceptMany : bool
             DropContainerClass : string
@@ -530,15 +532,15 @@ module Controls =
         match c with
         | Some v    -> [Attr.Class v]
         | None      -> []
-    
+
     [<JavaScript>]
     let private GetStyle (c: option<string>) =
         match c with
         | Some v    -> [Attr.Style v]
         | None      -> []
-    
 
-    
+
+
     [<JavaScript>]
     let DragAndDrop (dc:option<DragAndDropConfig>) (vs: list<string * 'T * bool>) : Formlet<list<'T>> =
         MkFormlet <| fun () ->
@@ -554,33 +556,33 @@ module Controls =
 
             let dragElem id label =
                 Span (GetStyle dc.DraggableStyle) -<
-                [Attr.Class dc.DraggableClass] -< 
+                [Attr.Class dc.DraggableClass] -<
                 [Attr.Id id] -< [Text label]
 
             let dropElem id label =
                 Span (GetStyle dc.DroppableStyle) -<
-                [Attr.Class dc.DroppableClass]-< 
+                [Attr.Class dc.DroppableClass]-<
                 [Attr.Id id] -< [Text label]
 
             // Drag
             let dragCnf = JQueryUI.DraggableConfiguration()
-            dragCnf.Helper <- "clone"
-            
+            dragCnf.helper <- "clone"
+
             let idDrs =
                 vs
                 |> List.map (fun (label, value, added)  ->
                     let id = NewId ()
                     dict.[id] <- (label, value)
                     let elem = dragElem id label
-                    id , JQueryUI.Draggable.New(elem, dragCnf)  , added 
+                    id , JQueryUI.Draggable.New(elem, dragCnf)  , added
                 )
 
             let ids = List.map (fun (x,_,_) -> x) idDrs
             let draggables = List.map (fun (_,y,_) -> y) idDrs
             let initials = List.choose (fun (id,_,add) -> if add then Some id else None) idDrs
 
-            let dropPanel = 
-                Div [Attr.Class dc.DropContainerClass] -< 
+            let dropPanel =
+                Div [Attr.Class dc.DropContainerClass] -<
                 (GetStyle dc.DropContainerStyle) -<
                 (GetStyle dc.DropContainerStyle)
 
@@ -594,7 +596,7 @@ module Controls =
             let addItem id =
                 let (label, value) = dict.[id]
                 let newId = NewId ()
-                
+
                 let isAdded = List.exists (fun (i, _) -> i = id) resList.Value
 
                 if not dc.AcceptMany then
@@ -603,7 +605,7 @@ module Controls =
                 // Not added or we accept many
                 if (not isAdded) || dc.AcceptMany then
                     // New element
-                    let elem = 
+                    let elem =
                         dropElem newId label
                         |>! Events.OnClick (fun el _ ->
                             el.Remove()
@@ -632,18 +634,18 @@ module Controls =
                     update ()
 
 
-            let droppable = 
+            let droppable =
                 JQueryUI.Droppable.New(dropPanel, unbox box dropCnf)
-            
+
             // Drag Panel
             let dragPanel =
-                Div [Attr.Class dc.DragContainerClass] -< 
+                Div [Attr.Class dc.DragContainerClass] -<
                 (GetStyle dc.DragContainerStyle) -<
                 draggables
 
             let body =
                 Div  [dragPanel; dropPanel]
-                |>! OnAfterRender (fun _ -> 
+                |>! OnAfterRender (fun _ ->
                     reset ()
                 )
             body, reset, state

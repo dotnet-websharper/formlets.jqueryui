@@ -10,7 +10,7 @@
     <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
     <RootNamespace>$(Name)</RootNamespace>
     <AssemblyName>$(Name)</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,7 +31,7 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\$(Name).XML</DocumentationFile>
   </PropertyGroup>
-  <Import Project="$(INTELLIFACTORY)/build/IntelliFactory.WebSharper-2.3.targets" />
+  <Import Project="..\.build\lib\IntelliFactory.WebSharper.targets" />
   <ItemGroup>
     <EmbeddedResource Include="styles/Formlet.css" />
     <Compile Include="Resources.fs" />
@@ -49,17 +49,15 @@
     <Reference Include="System" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="IntelliFactory.Json" />
     <Reference Include="IntelliFactory.WebSharper" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
     <Reference Include="IntelliFactory.WebSharper.JQuery" />
     <Reference Include="IntelliFactory.WebSharper.Html" />
-    <Reference Include="IntelliFactory.Formlet.Base" />
+    <Reference Include="IntelliFactory.Formlet" />
     <Reference Include="IntelliFactory.Reactive" />
     <Reference Include="IntelliFactory.WebSharper.Core" />
     <Reference Include="IntelliFactory.WebSharper.Control" />
     <Reference Include="IntelliFactory.WebSharper.Collections" />
-    <Reference Include="IntelliFactory.SourceResolver" />
     <Reference Include="IntelliFactory.WebSharper.JQueryUI" />
     <Reference Include="IntelliFactory.WebSharper.Formlet" />
     <Reference Include="IntelliFactory.WebSharper.Ecma" />
