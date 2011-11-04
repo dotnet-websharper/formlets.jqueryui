@@ -43,6 +43,18 @@ module CssConstants =
 module internal Utils =
 
     [<JavaScript>]
+    let BaseFormlet = FormletProvider(UtilsProvider ())
+
+    [<JavaScript>]
+    let RX = Formlet.Data.UtilsProvider().Reactive
+
+    [<JavaScript>]
+    let RMap f s= RX.Select s f
+
+    [<JavaScript>]
+    let RChoose f s=  RX.Choose s f
+
+    [<JavaScript>]
     let MkFormlet f =
         Formlet.BuildFormlet <| fun () ->
             let b, r, s = f ()
@@ -57,53 +69,6 @@ module internal Utils =
         match (formlet :> IFormlet<_,_>).Layout.Apply(form.Body) with
         | Some (body, _) -> form, body.Element
         | None           -> form, Div []
-                
-    /// Implementation for IObservable representing
-    /// the state of controls.
-    type State<'T> =
-        internal 
-            {
-                Initial : option<Result<'T>>
-                Event   : Event<Result<'T>>
-            }
-        interface IObservable<Result<'T>> with
 
-            [<JavaScript>]
-            member this.Subscribe(o) =
-                this.Initial
-                |> Option.iter o.OnNext
-                
-                let disp =
-                    this.Event.Publish.Subscribe(fun v ->
-                        o.OnNext(v)
-                    )
-                disp
-
-        [<JavaScript>]
-        member this.Trigger(v) =
-            this.Event.Trigger v
-
-        [<JavaScript>]
-        [<Name "NewFail">]
-        static member New<'U>() : State<'U> =
-            {
-                Initial = None
-                Event = Event<_>()
-            }
-        
-        [<JavaScript>]
-        [<Name "NewSuccess">]
-        static member New<'U>(v) : State<'U> =
-            {
-                Initial = Some <| Result.Success v
-                Event = Event<_>()
-            }
-        
-        [<JavaScript>]
-        static member FromResult(res: Result<'U>) : State<'U> =
-            {
-                Initial = Some res
-                Event = Event<_>()
-            } 
 
 

@@ -6,10 +6,12 @@ open IntelliFactory.WebSharper.Html.Events
 open IntelliFactory.Formlet.Base
 open IntelliFactory.WebSharper.Formlet
 open IntelliFactory.WebSharper.JQuery
+open IntelliFactory.Formlet.Base.Tree
 open Utils
 
 module Enhance =
     
+    open IntelliFactory.Reactive
     module CC = IntelliFactory.WebSharper.Formlet.JQueryUI.CssConstants
 
     [<JavaScript>]
@@ -21,20 +23,8 @@ module Enhance =
                 ErrorIconClass = CC.ErrorIconClass
             }
 
+
     
-    [<JavaScript>]
-    let RX = Formlet.Data.UtilsProvider().Reactive
-
-    [<JavaScript>]
-    let RMap f s= RX.Select s f
-
-    [<JavaScript>]
-    let RChoose f s=  RX.Choose s f
-
-    [<JavaScript>]
-    let BaseFormlet = FormletProvider(UtilsProvider ())
-
-    open IntelliFactory.Formlet.Base.Tree
 
     [<JavaScript>]
     let private MakeWithSubmitAndResetButtons 
@@ -42,9 +32,6 @@ module Enhance =
                             (resetLabel: option<string>) 
                             (formlet: Formlet<'T>) : Formlet<'T> =
         BaseFormlet.New <| fun _ ->
-            
-            // Submit button
-            
             let submitButton = 
                 submitLabel
                 |> Option.map (fun label ->
@@ -201,7 +188,7 @@ module Enhance =
                 AddIconClass = CC.AddIconClass
                 RemoveIconClass = CC.RemIconClass
             }
-    
+
     [<Require(typeof<Resources.SkinResource>)>]
     [<JavaScript>]
     let WithFormContainer formlet =
@@ -213,7 +200,7 @@ module Enhance =
     [<JavaScript>]
     let WithDialog (title: string) (formlet: Formlet<'T>) =
         Formlet.BuildFormlet <| fun _ ->
-            let state = new Event<_>()
+            let state = HotStream<_>.New(Failure [])
             let conf =
                 JQueryUI.DialogConfiguration (
                     modal = true,
@@ -237,4 +224,8 @@ module Enhance =
             let dialog = 
                 JQueryUI.Dialog.New(el, conf)
             dialogOpt := Some dialog
-            Div [dialog] , ignore , state.Publish
+
+            let reset () =
+                dialog.Close ()
+                state.Trigger (Failure [])
+            Div [dialog] , reset , state
