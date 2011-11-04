@@ -8,59 +8,33 @@ open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Formlet
 open IntelliFactory.WebSharper.Formlet.JQueryUI
 open IntelliFactory.WebSharper.JQueryUI
+open IntelliFactory.Formlet.Base
+open IntelliFactory.Reactive
 
-module F =
+open System
+
+module Utils =
     [<Inline "console.log($x)">]
     let Log x = ()
 
-module J =
+module F =
 
     [<JavaScript>]
-    let InDialog (title: string) (formlet: Formlet<'T>) =
-        Formlet.BuildFormlet <| fun _ ->
-            let state = new Event<_>()
-            let conf =
-                JQueryUI.DialogConfiguration (
-                    modal = true,
-                    dialogClass = "dialog",
-                    title = title
-                )
-            let dialogOpt : ref<option<JQueryUI.Dialog>> = 
-                ref None
-            let el =
-                Div [
-                    formlet
-                    |> Formlet.Run (fun confirmed ->
-                        match dialogOpt.Value with
-                        | Some dialog ->
-                            state.Trigger (Result.Success confirmed)
-                            dialog.Close()
-                        | None ->
-                            ()
-                    )
-                ]
-            let dialog = 
-                JQueryUI.Dialog.New(el, conf)
-            dialogOpt := Some dialog
-            Div [dialog] , ignore , state.Publish
-
-    [<JavaScript>]
-    let Main () =
-        Formlet.Do {
-            let! _ =  Controls.Button "Show"
-            let! name = 
-                Controls.Input ""
-                |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
-                |> InDialog "Enter your name" 
-            return ()
-        }
-        |> Enhance.WithFormContainer
+    let BaseFormlet = FormletProvider(UtilsProvider ())
 
     [<JavaScript>]
     let RX = Formlet.Data.UtilsProvider().Reactive
 
     [<JavaScript>]
     let RMap f s= RX.Select s f
+
+    [<JavaScript>]
+    let FormAndElement formlet =
+        let formlet = Formlet.WithLayoutOrDefault formlet
+        let form = Formlet.BuildForm formlet
+        match (formlet :> IFormlet<_,_>).Layout.Apply(form.Body) with
+        | Some (body, _) -> form, body.Element
+        | None           -> form, Div []
 
 [<Sealed>]
 type SampleControl () =

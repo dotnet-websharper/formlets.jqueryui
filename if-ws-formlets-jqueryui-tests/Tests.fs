@@ -336,7 +336,32 @@ module Tests =
         |> Formlet.Sequence
         |> Formlet.Map ignore
 
-    
+    [<JavaScript>]
+    let TestTabsMany =
+        
+        let newF =
+            Formlet.Choose [
+                
+                Controls.Input "" 
+                |> Formlet.Map Some 
+                
+                Controls.Button "Remove" 
+                |> Formlet.Map (fun  _ -> None) 
+            ]
+        let addF =
+            Controls.Button "Add" 
+            |> Formlet.Map (fun ix ->
+                string (ix+1) , newF
+            )
+        let fs =
+            [
+                "0", Controls.Input "A" |> Formlet.Map Some
+            ]
+        Controls.TabsMany 0 fs addF
+        |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
+        |> Formlet.Map (List.fold (fun x y -> x + " " + y) "")
+        |> Inspect
+
     [<JavaScript>]
     let AllTests () = 
         [
@@ -353,6 +378,7 @@ module Tests =
             "Composed", Inspect TestComposed
             "Submit and Reset" , TestSubmitAndResetButtons
             "Test WithDialog" , TestWithDialog
+            "Test TabsMany", TestTabsMany
         ]
         |> Controls.TabsList 0
         |> Formlet.Map ignore

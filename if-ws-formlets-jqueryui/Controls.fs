@@ -9,11 +9,10 @@ open IntelliFactory.WebSharper.JQuery
 open Utils
 
 module Controls =
-
+    open IntelliFactory.Reactive
     module CC = IntelliFactory.WebSharper.Formlet.JQueryUI.CssConstants
 
-    [<JavaScript>]
-    let private Reactive = IntelliFactory.Reactive.Reactive.Default
+
 
     /// Constructs a button formlet. The integer value of the formlet
     /// indicates the number of clicks. The value 0 is triggered the first time
@@ -21,7 +20,7 @@ module Controls =
     [<JavaScript>]
     let CustomButton (conf : JQueryUI.ButtonConfiguration) =
         MkFormlet <| fun () ->
-            let state = State<int>.New()
+            let state = HotStream<_>.New(Failure [])
             let count = ref 0
             let button =
                 let genEl () = Button[Text conf.label]
@@ -32,7 +31,6 @@ module Controls =
             with
             | _ ->
                 ()
-
             button.OnClick(fun _ ->
                 state.Trigger (Success count.Value)
                 incr count
@@ -53,7 +51,7 @@ module Controls =
     [<JavaScript>]
     let Dialog (genEl : unit -> Element) : Formlet<unit> =
         MkFormlet <| fun _ ->
-            let state = new Event<_>()
+            let state = HotStream<_>.New(Failure [])
             let dialog =
                 JQueryUI.Dialog.New(genEl ())
             dialog.OnClose (fun _ ->
@@ -66,7 +64,7 @@ module Controls =
                 dialog.Close ()
                 state.Trigger (Result.Failure [])
 
-            Div [dialog], reset , state.Publish
+            Div [dialog], reset , state
 
     /// Constructs an Accordion formlet, displaying
     /// the given list of formlets on separate tabs.
@@ -120,9 +118,10 @@ module Controls =
                 )
                 |> Array.ofList
 
-            let rec state = Event<_>()
-
-            and accordion =
+            
+            let state = HotStream<_>.New()
+            
+            let rec accordion =
                 fs
                 |> Array.map (fun (label, _, _, elem) -> label , elem)
                 |> List.ofArray
@@ -150,7 +149,7 @@ module Controls =
 
             // State
             let state =
-                Reactive.Switch state.Publish
+                Reactive.Switch state
 
             accordion, reset , state
 
@@ -158,7 +157,7 @@ module Controls =
     [<JavaScript>]
     let Autocomplete def (source: seq<string>) : Formlet<string> =
         MkFormlet <| fun () ->
-            let state = State<string>.New(def)
+            let state = HotStream<_>.New(Success def)
             let input = Input [Attr.Value def]
             let upd () =
                 Success input.Value
@@ -209,8 +208,8 @@ module Controls =
 
             let state =
                 match def with
-                | Some date -> State<EcmaScript.Date>.New(date)
-                | None      -> State<_>.New()
+                | Some date -> HotStream<_>.New(Success date)
+                | None      -> HotStream<_>.New()
 
             date.OnSelect (fun date ->
                 state.Trigger (Success date)
@@ -319,7 +318,7 @@ module Controls =
                     []
 
             let slider = JQueryUI.Slider.New(unbox (box jqConf))
-            let state = State<_>.New()
+            let state = HotStream<_>.New()
             slider.OnChange(fun _ ->
                 slider.Values
                 |> List.ofArray
@@ -354,9 +353,9 @@ module Controls =
     let Sortable (fs: List<Formlet<'T>>)  =
         Formlet.BuildFormlet <| fun () ->
             let dict = System.Collections.Generic.Dictionary<string,  IObservable<Result<'T>> >()
-            let stateEv = Event<list<string>>()
+            let stateEv = HotStream<list<string>>.New()
             let state =
-                Reactive.Select stateEv.Publish (fun ids ->
+                Reactive.Select stateEv (fun ids ->
                     let x =
                         ids
                         |> List.map (fun id -> dict.[id])
@@ -438,6 +437,151 @@ module Controls =
 
             tabs, (fun _ -> reset tabs) , state
 
+    /// Constructs an Tabs formlet, displaying the given list of formlets on separate tabs.
+    [<JavaScript>]
+    let TabsMany    (defIndex : int)
+                    (fs: list<string * Formlet<option<'T>>>)
+                    (add: Formlet<string * Formlet<option<'T>>>)
+                    : Formlet<list<'T>> =
+
+         BaseFormlet.New <| fun () ->
+
+            // Reference to a list of all current forms.
+            // Updated when a new tab is added or removed.
+            let initLabelFormElems =
+                fs
+                |> List.map (fun (l,f) ->
+                    let (form, elem) = FormAndElement f
+                    let state = Reactive.Heat form.State
+                    l, state, elem, form
+                )
+            let currLabelFormElems = ref initLabelFormElems
+
+            // Event of list of the latest states.
+            let states = new Event<IObservable<seq<Result<Option<'T>>>>>()
+
+            let updateCurrState () =
+                currLabelFormElems.Value
+                |> List.mapi (fun i (_, state, _, _) ->
+                    state
+                )
+                |> RX.Sequence
+                |> states.Trigger
+
+            let tabs =
+                currLabelFormElems.Value
+                |> List.map (fun (label, _, elem, _) -> label , elem)
+                |> JQueryUI.Tabs.New
+
+            let state =
+                RX.Switch states.Publish
+                |> RMap (fun xs ->
+                    let res =
+                        xs
+                        |> Seq.mapi (fun i x -> (i,x))
+                        |> Seq.choose (fun (ix, x) ->
+                            match x with
+                            | Result.Success None ->
+                                // Remove tab
+                                tabs.Remove(ix)
+
+                                // Update current states
+                                currLabelFormElems :=
+                                    currLabelFormElems.Value
+                                    |> List.mapi (fun ix x -> (ix, x))
+                                    |> List.filter (fun (cIx, _) ->
+                                        cIx <> ix
+                                    )
+                                    |> List.map snd
+                                None
+                            | _ ->
+                                Some x
+                        )
+                        |> Result.Sequence
+                    res
+                    |> Result.Map (List.choose id)
+                )
+
+            let tabsBody =
+                {
+                    Label = None
+                    Element = 
+                        Div [tabs]
+                        |>! OnAfterRender (fun _ ->
+                            currLabelFormElems.Value
+                            |> List.map (fun (label, state, elem, _) ->
+                                state
+                            )
+                            |> RX.Sequence
+                            |> states.Trigger
+                        )
+                }
+
+            let addForm =
+                Formlet.BuildForm add
+
+            // Add a new tab whenever the 'add form' triggers.
+            addForm.State.Subscribe (fun res ->
+                match res with
+                | Success (label , formlet) ->
+                    let (form, element) = FormAndElement formlet
+                    let state = Reactive.Heat form.State
+                    tabs.Add (element, label)
+
+                    // Update state
+                    currLabelFormElems := 
+                        currLabelFormElems.Value @ [label, state, element, form]
+                    updateCurrState ()
+                | Failure _ ->
+                    ()
+            )
+            |> ignore
+
+            // Merge body streams of formlet and add button.
+            let body = 
+                let left =
+                    addForm.Body
+                    |> RMap Tree.Edit.Left
+
+                let right =
+                    Tree.Leaf tabsBody
+                    |> Tree.Edit.Replace
+                    |> Tree.Edit.Right
+                    |> RX.Return
+
+                // RX.Merge left right
+                RX.Merge left right
+            let reset (_: obj) =
+                let numInits = initLabelFormElems |> List.length
+
+                // Remove added tabs
+                [numInits .. (tabs.Length - 1)]
+                |> List.rev
+                |> List.iter  (fun ix ->
+                    tabs.Remove ix
+                )
+
+                // Reset composed state
+                currLabelFormElems := initLabelFormElems
+
+                // Reset add formlet
+                addForm.Notify (obj ())
+
+                // Reset initial form states
+                for (_, _, _, form) in initLabelFormElems do
+                    form.Notify (obj ())
+
+                updateCurrState ()
+            {
+                Body = body
+                Dispose = fun () -> ()
+                State   = state
+                Notify = reset
+            }
+        |> Data.OfIFormlet
+
+
+
     [<Inline "jQuery($tabs.element.el).tabs({select: function(x,ui){$f(ui.index)}})">]
     let private onSelect tabs (f : int -> unit) = ()
 
@@ -460,9 +604,9 @@ module Controls =
                 )
                 |> Array.ofList
 
-            let states = Event<_>()
+            let states = HotStream<_>.New()
 
-            let state = Reactive.Switch states.Publish
+            let state = Reactive.Switch states
 
             let update index =
                 let (_, s, _, _) = fs.[index]
@@ -550,7 +694,7 @@ module Controls =
                 | None      -> DragAndDropConfig.Default
 
             let resList = ref []
-            let state = State<_>.New()
+            let state = HotStream<_>.New()
 
             let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
 
