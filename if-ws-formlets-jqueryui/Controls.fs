@@ -437,7 +437,13 @@ module Controls =
 
             tabs, (fun _ -> reset tabs) , state
 
-    /// Constructs an Tabs formlet, displaying the given list of formlets on separate tabs.
+    /// Creates a formlet for collecting a list of values from a tab 
+    /// interface. The first argument specifies the index of the selected tab.
+    /// The second argument is a list initial tab label and formlet pairs.
+    /// The third argument is formlet producing a pair of label and a new formlet.
+    /// Each time the formlet triggers a new value, a new tab is added.
+    /// Whenever any of the internal tabs formlets triggers a value 'None', the
+    /// corresponding tab is removed.
     [<JavaScript>]
     let TabsMany    (defIndex : int)
                     (fs: list<string * Formlet<option<'T>>>)
@@ -472,6 +478,8 @@ module Controls =
                 currLabelFormElems.Value
                 |> List.map (fun (label, _, elem, _) -> label , elem)
                 |> JQueryUI.Tabs.New
+
+            tabs.Select defIndex
 
             let state =
                 RX.Switch states.Publish
@@ -560,6 +568,8 @@ module Controls =
                 |> List.iter  (fun ix ->
                     tabs.Remove ix
                 )
+                
+                tabs.Select defIndex
 
                 // Reset composed state
                 currLabelFormElems := initLabelFormElems
