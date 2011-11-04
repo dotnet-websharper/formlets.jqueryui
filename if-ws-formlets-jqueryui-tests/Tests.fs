@@ -348,16 +348,20 @@ module Tests =
                 Controls.Button "Remove" 
                 |> Formlet.Map (fun  _ -> None) 
             ]
-        let addF =
-            Controls.Button "Add" 
-            |> Formlet.Map (fun ix ->
-                string (ix+1) , newF
-            )
         let fs =
             [
-                "0", Controls.Input "A" |> Formlet.Map Some
+                "0", Controls.Input "0" |> Formlet.Map Some
+                "1", Controls.Input "1" |> Formlet.Map Some
+                "2", Controls.Input "2" |> Formlet.Map Some
             ]
-        Controls.TabsMany 0 fs addF
+
+        let addF =
+            Controls.Button "Add"
+            |> Formlet.Map (fun ix ->
+                string (ix + (List.length fs)) , newF
+            )
+
+        Controls.TabsMany 1 fs addF
         |> Enhance.WithSubmitAndResetButtons "Submit" "Reset"
         |> Formlet.Map (List.fold (fun x y -> x + " " + y) "")
         |> Inspect
