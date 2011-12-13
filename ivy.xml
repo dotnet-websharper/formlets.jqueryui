@@ -8,12 +8,7 @@
     <artifact name="if-ws-formlets-jqueryui-docs" ext="zip" type="doc" />
   </publications>
   <dependencies>
-    <dependency name="if-ws" rev="latest.integration" />
-    <dependency name="if-ws-ecma" rev="latest.integration" />
-    <dependency name="if-formlet" rev="latest.integration" />
-    <dependency name="if-ws-formlets" rev="latest.integration" />
-    <dependency name="if-ws-control" rev="latest.integration" />
-    <dependency name="if-ws-collections" rev="latest.integration" />
+    <dependency name="WebSharper" rev="latest.integration" />
     <dependency name="if-ws-jqueryui" rev="latest.integration" />
   </dependencies>
 </ivy-module>
