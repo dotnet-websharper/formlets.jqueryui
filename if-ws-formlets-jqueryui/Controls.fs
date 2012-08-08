@@ -211,14 +211,14 @@ module Controls =
                 | Some date -> HotStream<_>.New(Success date)
                 | None      -> HotStream<_>.New()
 
-            date.OnSelect (fun date ->
+            date.OnSelect (fun date _ ->
                 state.Trigger (Success date)
             )
 
             let reset () =
                 match def with
                 | Some d ->
-                    date.SetDate (unbox d)
+                    date.SetDate(d)
                     state.Trigger (Success d)
                 | None ->
                     match inp with
