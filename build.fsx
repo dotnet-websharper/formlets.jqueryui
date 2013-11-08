@@ -2,7 +2,7 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("WebSharper.Formlets.JQueryUI", "2.5")
+    BuildTool().PackageId("WebSharper.Formlet.JQueryUI", "2.5")
         .References(fun r ->
             [
                 r.NuGet("WebSharper.JQueryUI").Reference()
