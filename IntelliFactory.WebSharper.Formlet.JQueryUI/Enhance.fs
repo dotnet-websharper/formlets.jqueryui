@@ -39,8 +39,8 @@ module Enhance =
                     let button =
                         JQueryUI.Button.New (
                             JQueryUI.ButtonConfiguration(
-                                disabled = true,
-                                label = label
+                                Disabled = true,
+                                Label = label
                             )
                         )
                         |>! OnAfterRender (fun _ ->
@@ -81,7 +81,8 @@ module Enhance =
                                 button.Enable()
                             )
                     | Result.Failure fs ->
-                        button.Disable ()
+                        if isRendered.Value then
+                            button.Disable ()
                 )
             )
             |> ignore
@@ -203,9 +204,9 @@ module Enhance =
             let state = HotStream<_>.New(Failure [])
             let conf =
                 JQueryUI.DialogConfiguration (
-                    modal = true,
-                    dialogClass = "dialog",
-                    title = title
+                    Modal = true,
+                    DialogClass = "dialog",
+                    Title = title
                 )
             let dialogOpt : ref<option<JQueryUI.Dialog>> = 
                 ref None
