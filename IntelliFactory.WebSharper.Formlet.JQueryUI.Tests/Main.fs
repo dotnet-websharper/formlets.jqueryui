@@ -44,3 +44,29 @@ type SampleControl () =
     override this.Body =
         Tests.AllTests ()
         :> _
+
+
+open IntelliFactory.WebSharper.Sitelets
+
+type Act = | Index
+
+module Site =
+
+    open IntelliFactory.Html
+
+    let HomePage =
+        Sitelets.Content.PageContent <| fun ctx ->
+            { Page.Default with
+                Title = Some "WebSharper Formlets for jQuery UI Tests"
+                Body = [Div [new SampleControl()]] }
+
+    let Main = Sitelet.Content "/" Index HomePage
+
+[<Sealed>]
+type Website() =
+    interface IWebsite<Act> with
+        member this.Sitelet = Site.Main
+        member this.Actions = [Act.Index]
+
+[<assembly: Website(typeof<Website>)>]
+do ()

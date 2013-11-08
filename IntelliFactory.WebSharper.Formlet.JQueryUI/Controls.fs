@@ -23,7 +23,7 @@ module Controls =
             let state = HotStream<_>.New(Failure [])
             let count = ref 0
             let button =
-                let genEl () = Button[Text conf.label]
+                let genEl () = Button[Text conf.Label]
                 JQueryUI.Button.New(genEl, conf)
             // Make sure to try to render the button
             try
@@ -45,7 +45,7 @@ module Controls =
     /// the button is clicked.
     [<JavaScript>]
     let Button (label : string) =
-        JQueryUI.ButtonConfiguration(label = label)
+        JQueryUI.ButtonConfiguration(Label = label)
         |> CustomButton
 
     [<JavaScript>]
@@ -121,7 +121,11 @@ module Controls =
             
             let state = HotStream<_>.New()
             
-            let rec accordion =
+            let update index =
+                let (_, s, _, _) = fs.[index]
+                state.Trigger s
+
+            let accordion =
                 fs
                 |> Array.map (fun (label, _, _, elem) -> label , elem)
                 |> List.ofArray
@@ -130,18 +134,14 @@ module Controls =
                     update 0
                     acc.Activate 0
                 )
-            and update index =
-                let (_, s, _, _) = fs.[index]
-                state.Trigger s
-
-            and reset () =
+            let reset () =
                 fs |> Array.iter (fun (_,_,n,_) -> n null)
                 accordion.Activate 0
                 update 0
 
             // Update on tab select
             // OnSelectA accordion update
-            accordion.OnChange (fun ev _->
+            accordion.OnActivate (fun ev _->
                 (accordion :> IPagelet).Body
                 |> ActiveAccordionIndex
                 |> update
@@ -177,7 +177,7 @@ module Controls =
                 JQueryUI.Autocomplete.New(
                     input ,
                     JQueryUI.AutocompleteConfiguration(
-                        source = Array.ofSeq source
+                        Source = Array.ofSeq source
                     )
                 )
 
@@ -285,24 +285,24 @@ module Controls =
                 | None      -> SliderConfiguration.Default
             let jqConf =
                 JQueryUI.SliderConfiguration (
-                    animate = conf.Animate,
-                    values = conf.Values,
-                    min = conf.Min,
-                    max = conf.Max
+                    Animate = conf.Animate,
+                    Values = conf.Values,
+                    Min = conf.Min,
+                    Max = conf.Max
                 )
             match conf.Range with
             | RangeConfig.Bool b ->
-                jqConf.range <- b
+                jqConf.Range <- b
             | RangeConfig.Max ->
-                jqConf.range <- "max"
+                jqConf.Range <- "max"
             | RangeConfig.Min ->
-                jqConf.range <- "min"
+                jqConf.Range <- "min"
 
             match conf.Orientation with
             | Orientation.Horizontal ->
-                jqConf.orientation <- "horizontal"
+                jqConf.Orientation <- "horizontal"
             | Orientation.Vertical ->
-                jqConf.orientation <- "vertical"
+                jqConf.Orientation <- "vertical"
 
             let style =
                 let width w = "width: " + (string w) + "px;"
@@ -421,7 +421,7 @@ module Controls =
 
                 )
             let reset (tabs: JQueryUI.Tabs) =
-                tabs.Select defIndex
+                tabs.Option("active", defIndex)
                 fs
                 |> List.iter (fun (_,f,_) ->
                     f.Notify null
@@ -475,11 +475,10 @@ module Controls =
                 |> states.Trigger
 
             let tabs =
-                currLabelFormElems.Value
-                |> List.map (fun (label, _, elem, _) -> label , elem)
-                |> JQueryUI.Tabs.New
-
-            tabs.Select defIndex
+                JQueryUI.Tabs.New(
+                    currLabelFormElems.Value
+                    |> List.map (fun (label, _, elem, _) -> label , elem),
+                    JQueryUI.TabsConfiguration(Active = defIndex))
 
             let state =
                 RX.Switch states.Publish
@@ -569,7 +568,7 @@ module Controls =
                     tabs.Remove ix
                 )
                 
-                tabs.Select defIndex
+                tabs.Option("active", defIndex)
 
                 // Reset composed state
                 currLabelFormElems := initLabelFormElems
@@ -624,7 +623,7 @@ module Controls =
 
             let reset (tabs: JQueryUI.Tabs) =
                 fs |> Array.iter (fun (_,_,n,_) -> n null)
-                tabs.Select defIndex
+                tabs.Option("active", defIndex)
                 update defIndex
 
             let tabs =
@@ -637,8 +636,8 @@ module Controls =
                 )
             OnSelect tabs update
 
-            tabs.OnSelect (fun ev ui->
-                update ui.index
+            tabs.OnActivate (fun ev ui ->
+                update (ui.NewTab.Index())
             )
 
             tabs, (fun _ -> reset tabs) , state
@@ -720,7 +719,7 @@ module Controls =
 
             // Drag
             let dragCnf = JQueryUI.DraggableConfiguration()
-            dragCnf.helper <- "clone"
+            dragCnf.Helper <- "clone"
 
             let idDrs =
                 vs

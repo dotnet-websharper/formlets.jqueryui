@@ -1,6 +1,8 @@
 (bin|obj)/(Debug|Release)
-[.]build
+^[.]?build/
 [.](user|suo)$
 Sample
 web/bin
 web/Scripts
+^packages/
+^tools/packages/
