@@ -8,6 +8,7 @@ let bt =
                 r.NuGet("WebSharper.JQueryUI").Reference()
                 r.Assembly "System.Web"
             ])
+    |> fun bt -> bt.WithFramework(bt.Framework.Net40)
 
 let main =
     bt.WebSharper.Library("IntelliFactory.WebSharper.Formlet.JQueryUI")
