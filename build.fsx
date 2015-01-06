@@ -2,7 +2,7 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("WebSharper.Formlet.JQueryUI", "3.0-alpha")
+    BuildTool().PackageId("WebSharper.Formlets.JQueryUI", "3.0-alpha")
         .References(fun r ->
             [
                 r.NuGet("WebSharper.JQueryUI").Reference()
@@ -11,11 +11,11 @@ let bt =
     |> fun bt -> bt.WithFramework(bt.Framework.Net40)
 
 let main =
-    bt.WebSharper.Library("IntelliFactory.WebSharper.Formlet.JQueryUI")
+    bt.WebSharper.Library("IntelliFactory.WebSharper.Formlets.JQueryUI")
         .SourcesFromProject()
 
 let test =
-    bt.WebSharper.HtmlWebsite("IntelliFactory.WebSharper.Formlet.JQueryUI.Tests")
+    bt.WebSharper.HtmlWebsite("IntelliFactory.WebSharper.Formlets.JQueryUI.Tests")
         .SourcesFromProject()
         .References(fun r -> [r.Project main])
 
@@ -26,7 +26,7 @@ bt.Solution [
     bt.NuGet.CreatePackage()
         .Configure(fun c ->
             { c with
-                Title = Some "WebSharper.Formlet.JQueryUI"
+                Title = Some "WebSharper.Formlets.JQueryUI"
                 LicenseUrl = Some "http://websharper.com/licensing"
                 Description = "WebSharper Formlets for JQueryUI"
                 RequiresLicenseAcceptance = true })

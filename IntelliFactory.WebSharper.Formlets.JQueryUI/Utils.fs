@@ -1,9 +1,10 @@
-﻿namespace IntelliFactory.WebSharper.Formlet.JQueryUI
+﻿namespace IntelliFactory.WebSharper.Formlets.JQueryUI
 
 open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html
-open IntelliFactory.WebSharper.Formlet
-open IntelliFactory.Formlet.Base
+open IntelliFactory.WebSharper.JavaScript
+open IntelliFactory.WebSharper.Html.Client
+open IntelliFactory.WebSharper.Formlets
+open IntelliFactory.Formlets.Base
 open System
 
 
@@ -46,7 +47,7 @@ module internal Utils =
     let BaseFormlet = FormletProvider(UtilsProvider ())
 
     [<JavaScript>]
-    let RX = Formlet.Data.UtilsProvider().Reactive
+    let RX = Formlets.Data.UtilsProvider().Reactive
 
     [<JavaScript>]
     let RMap f s= RX.Select s f
