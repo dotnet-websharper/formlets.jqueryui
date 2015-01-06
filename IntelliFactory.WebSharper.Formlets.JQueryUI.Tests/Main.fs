@@ -1,14 +1,14 @@
-﻿namespace IntelliFactory.WebSharper.Formlet.JQueryUI.XTest
+﻿namespace IntelliFactory.WebSharper.Formlets.JQueryUI.XTest
 
 open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html
+open IntelliFactory.WebSharper.Html.Client
 open IntelliFactory.WebSharper.Web
-open IntelliFactory.WebSharper
+open IntelliFactory.WebSharper.JavaScript
 
-open IntelliFactory.WebSharper.Formlet
-open IntelliFactory.WebSharper.Formlet.JQueryUI
+open IntelliFactory.WebSharper.Formlets
+open IntelliFactory.WebSharper.Formlets.JQueryUI
 open IntelliFactory.WebSharper.JQueryUI
-open IntelliFactory.Formlet.Base
+open IntelliFactory.Formlets.Base
 open IntelliFactory.Reactive
 
 open System
@@ -23,7 +23,7 @@ module F =
     let BaseFormlet = FormletProvider(UtilsProvider ())
 
     [<JavaScript>]
-    let RX = Formlet.Data.UtilsProvider().Reactive
+    let RX = Formlets.Data.UtilsProvider().Reactive
 
     [<JavaScript>]
     let RMap f s= RX.Select s f
@@ -52,7 +52,7 @@ type Act = | Index
 
 module Site =
 
-    open IntelliFactory.Html
+    open IntelliFactory.WebSharper.Html.Server
 
     let HomePage =
         Sitelets.Content.PageContent <| fun ctx ->

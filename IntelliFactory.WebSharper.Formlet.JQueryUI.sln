@@ -6,9 +6,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ivy.xml = ivy.xml
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Formlet.JQueryUI", "IntelliFactory.WebSharper.Formlet.JQueryUI\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj", "{4A6BAE18-3F58-4ADD-A7E8-B5380EFDF0D1}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Formlets.JQueryUI", "IntelliFactory.WebSharper.Formlets.JQueryUI\IntelliFactory.WebSharper.Formlets.JQueryUI.fsproj", "{4A6BAE18-3F58-4ADD-A7E8-B5380EFDF0D1}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Formlet.JQueryUI.Test", "IntelliFactory.WebSharper.Formlet.JQueryUI.Tests\IntelliFactory.WebSharper.Formlet.JQueryUI.Tests.fsproj", "{35514715-41DF-4C17-A9EC-D80ABCD9E353}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IntelliFactory.WebSharper.Formlets.JQueryUI.Test", "IntelliFactory.WebSharper.Formlets.JQueryUI.Tests\IntelliFactory.WebSharper.Formlets.JQueryUI.Tests.fsproj", "{35514715-41DF-4C17-A9EC-D80ABCD9E353}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

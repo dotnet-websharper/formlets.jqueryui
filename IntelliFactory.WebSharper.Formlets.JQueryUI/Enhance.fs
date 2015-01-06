@@ -1,18 +1,19 @@
-﻿namespace IntelliFactory.WebSharper.Formlet.JQueryUI
+﻿namespace IntelliFactory.WebSharper.Formlets.JQueryUI
 
 open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html
-open IntelliFactory.WebSharper.Html.Events
-open IntelliFactory.Formlet.Base
-open IntelliFactory.WebSharper.Formlet
+open IntelliFactory.WebSharper.JavaScript
+open IntelliFactory.WebSharper.Html.Client
+open IntelliFactory.WebSharper.Html.Client.Events
+open IntelliFactory.Formlets.Base
+open IntelliFactory.WebSharper.Formlets
 open IntelliFactory.WebSharper.JQuery
-open IntelliFactory.Formlet.Base.Tree
+open IntelliFactory.Formlets.Base.Tree
 open Utils
 
 module Enhance =
     
     open IntelliFactory.Reactive
-    module CC = IntelliFactory.WebSharper.Formlet.JQueryUI.CssConstants
+    module CC = IntelliFactory.WebSharper.Formlets.JQueryUI.CssConstants
 
     [<JavaScript>]
     let WithValidationIcon formlet =

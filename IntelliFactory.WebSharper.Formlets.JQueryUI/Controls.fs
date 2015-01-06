@@ -1,16 +1,17 @@
-﻿namespace IntelliFactory.WebSharper.Formlet.JQueryUI
+﻿namespace IntelliFactory.WebSharper.Formlets.JQueryUI
 
 open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html
-open IntelliFactory.WebSharper.Html.Events
-open IntelliFactory.Formlet.Base
-open IntelliFactory.WebSharper.Formlet
+open IntelliFactory.WebSharper.JavaScript
+open IntelliFactory.WebSharper.Html.Client
+open IntelliFactory.WebSharper.Html.Client.Events
+open IntelliFactory.Formlets.Base
+open IntelliFactory.WebSharper.Formlets
 open IntelliFactory.WebSharper.JQuery
 open Utils
 
 module Controls =
     open IntelliFactory.Reactive
-    module CC = IntelliFactory.WebSharper.Formlet.JQueryUI.CssConstants
+    module CC = IntelliFactory.WebSharper.Formlets.JQueryUI.CssConstants
 
 
 
@@ -27,7 +28,7 @@ module Controls =
                 JQueryUI.Button.New(genEl, conf)
             // Make sure to try to render the button
             try
-                (button :> IPagelet).Render()
+                button.Render()
             with
             | _ ->
                 ()
@@ -142,7 +143,7 @@ module Controls =
             // Update on tab select
             // OnSelectA accordion update
             accordion.OnActivate (fun ev _->
-                (accordion :> IPagelet).Body
+                accordion.Body
                 |> ActiveAccordionIndex
                 |> update
             )
@@ -191,7 +192,7 @@ module Controls =
             ac, reset, state
 
     [<JavaScript>]
-    let private DatepickerInput showCalendar (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
+    let private DatepickerInput showCalendar (def: option<Date>) : Formlet<Date> =
         MkFormlet <| fun () ->
             let inp =
                 if showCalendar then
@@ -234,11 +235,11 @@ module Controls =
             date, reset, state
 
     [<JavaScript>]
-    let Datepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
+    let Datepicker (def: option<Date>) : Formlet<Date> =
         DatepickerInput true def
 
     [<JavaScript>]
-    let InputDatepicker (def: option<EcmaScript.Date>) : Formlet<EcmaScript.Date> =
+    let InputDatepicker (def: option<Date>) : Formlet<Date> =
         DatepickerInput false def
 
     type Orientation =

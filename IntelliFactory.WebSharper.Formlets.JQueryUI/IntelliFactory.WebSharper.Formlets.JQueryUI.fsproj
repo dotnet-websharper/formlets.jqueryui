@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{35514715-41df-4c17-a9ec-d80abcd9e353}</ProjectGuid>
+    <ProjectGuid>{4a6bae18-3f58-4add-a7e8-b5380efdf0d1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <Name>IntelliFactory.WebSharper.Formlet.JQueryUI.Test</Name>
+    <Name>IntelliFactory.WebSharper.Formlets.JQueryUI</Name>
     <RootNamespace>$(Name)</RootNamespace>
     <AssemblyName>$(Name)</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -32,6 +32,14 @@
     <DocumentationFile>bin\Release\$(Name).XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="styles/Formlet.css" />
+    <Compile Include="Resources.fs" />
+    <Compile Include="Dependencies.fs" />
+    <Compile Include="Utils.fs" />
+    <Compile Include="Controls.fs" />
+    <Compile Include="Enhance.fs" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core">
@@ -40,32 +48,18 @@
     <Reference Include="System" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="IntelliFactory.Html" />
     <Reference Include="IntelliFactory.WebSharper" />
     <Reference Include="IntelliFactory.WebSharper.Dom" />
     <Reference Include="IntelliFactory.WebSharper.JQuery" />
     <Reference Include="IntelliFactory.WebSharper.Html" />
-    <Reference Include="IntelliFactory.Formlet" />
-    <Reference Include="IntelliFactory.WebSharper.Web" />
+    <Reference Include="IntelliFactory.Formlets" />
     <Reference Include="IntelliFactory.Reactive" />
     <Reference Include="IntelliFactory.WebSharper.Core" />
     <Reference Include="IntelliFactory.WebSharper.Control" />
     <Reference Include="IntelliFactory.WebSharper.Collections" />
     <Reference Include="IntelliFactory.WebSharper.JQueryUI" />
-    <Reference Include="IntelliFactory.WebSharper.Formlet" />
+    <Reference Include="IntelliFactory.WebSharper.Formlets" />
     <Reference Include="IntelliFactory.WebSharper.Ecma" />
   </ItemGroup>
-  <Import Project="..\.build\lib\IntelliFactory.WebSharper.targets" />
-  <ItemGroup>
-    <Compile Include="Samples.fs" />
-    <Compile Include="Tests.fs" />
-    <Compile Include="Main.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\IntelliFactory.WebSharper.Formlet.JQueryUI\IntelliFactory.WebSharper.Formlet.JQueryUI.fsproj">
-      <Name>IntelliFactory.WebSharper.Formlet.JQueryUI</Name>
-      <Project>{4a6bae18-3f58-4add-a7e8-b5380efdf0d1}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="..\build\net40\IntelliFactory.WebSharper.Formlets.JQueryUI.proj" />
 </Project>
