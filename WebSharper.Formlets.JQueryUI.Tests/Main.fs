@@ -1,13 +1,13 @@
-﻿namespace IntelliFactory.WebSharper.Formlets.JQueryUI.XTest
+﻿namespace WebSharper.Formlets.JQueryUI.XTest
 
-open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html.Client
-open IntelliFactory.WebSharper.Web
-open IntelliFactory.WebSharper.JavaScript
+open WebSharper
+open WebSharper.Html.Client
+open WebSharper.Web
+open WebSharper.JavaScript
 
-open IntelliFactory.WebSharper.Formlets
-open IntelliFactory.WebSharper.Formlets.JQueryUI
-open IntelliFactory.WebSharper.JQueryUI
+open WebSharper.Formlets
+open WebSharper.Formlets.JQueryUI
+open WebSharper.JQueryUI
 open IntelliFactory.Formlets.Base
 open IntelliFactory.Reactive
 
@@ -46,13 +46,13 @@ type SampleControl () =
         :> _
 
 
-open IntelliFactory.WebSharper.Sitelets
+open WebSharper.Sitelets
 
 type Act = | Index
 
 module Site =
 
-    open IntelliFactory.WebSharper.Html.Server
+    open WebSharper.Html.Server
 
     let HomePage =
         Sitelets.Content.PageContent <| fun ctx ->

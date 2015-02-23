@@ -11,13 +11,23 @@ let bt =
     |> fun bt -> bt.WithFramework(bt.Framework.Net40)
 
 let main =
-    bt.WebSharper.Library("IntelliFactory.WebSharper.Formlets.JQueryUI")
+    bt.WebSharper.Library("WebSharper.Formlets.JQueryUI")
         .SourcesFromProject()
+        .References(fun r ->
+            [
+                r.NuGet("IntelliFactory.Reactive").Reference()
+                r.NuGet("WebSharper.Formlets").Reference()
+            ])
 
 let test =
-    bt.WebSharper.HtmlWebsite("IntelliFactory.WebSharper.Formlets.JQueryUI.Tests")
+    bt.WebSharper.HtmlWebsite("WebSharper.Formlets.JQueryUI.Tests")
         .SourcesFromProject()
-        .References(fun r -> [r.Project main])
+        .References(fun r ->
+            [
+                r.NuGet("IntelliFactory.Reactive").Reference()
+                r.NuGet("WebSharper.Formlets").Reference()
+                r.Project main
+            ])
 
 bt.Solution [
     main

@@ -1,12 +1,12 @@
-﻿namespace IntelliFactory.WebSharper.Formlets.JQueryUI.XTest
+﻿namespace WebSharper.Formlets.JQueryUI.XTest
 
-open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html.Client
-open IntelliFactory.WebSharper.Web
-open IntelliFactory.WebSharper.JavaScript
+open WebSharper
+open WebSharper.Html.Client
+open WebSharper.Web
+open WebSharper.JavaScript
 
-open IntelliFactory.WebSharper.Formlets
-open IntelliFactory.WebSharper.Formlets.JQueryUI
+open WebSharper.Formlets
+open WebSharper.Formlets.JQueryUI
 
 module Tests =
 
