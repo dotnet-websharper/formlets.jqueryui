@@ -1,9 +1,9 @@
-﻿namespace IntelliFactory.WebSharper.Formlets.JQueryUI
+﻿namespace WebSharper.Formlets.JQueryUI
 
-open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.JavaScript
-open IntelliFactory.WebSharper.Html.Client
-open IntelliFactory.WebSharper.Formlets
+open WebSharper
+open WebSharper.JavaScript
+open WebSharper.Html.Client
+open WebSharper.Formlets
 open IntelliFactory.Formlets.Base
 open System
 

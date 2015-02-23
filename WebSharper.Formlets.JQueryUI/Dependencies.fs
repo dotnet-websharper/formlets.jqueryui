@@ -8,13 +8,13 @@
 // prohibited without the written consent of the copyright holder.
 //-----------------------------------------------------------------
 // $end{copyright}
+namespace WebSharper.Formlets.JQueryUI
 
-namespace IntelliFactory.WebSharper.Formlet.JQueryUI
-
-open IntelliFactory.WebSharper
-open System.Reflection
+open WebSharper
 open System.Web.UI
 
-[<assembly: WebResource("Formlet.css", "text/css", PerformSubstitution = true)>]
-
-do ()
+module internal Resources =
+    open IntelliFactory.Formlets.Base
+    /// Default CSS skin.
+    type internal SkinResource() =
+        inherit Core.Resources.BaseResource("Formlet.css")
