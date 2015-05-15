@@ -2,13 +2,14 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("WebSharper.Formlets.JQueryUI", "3.0")
+    BuildTool().PackageId("WebSharper.Formlets.JQueryUI")
+        .VersionFrom("WebSharper")
+        .WithFramework(fun fw -> fw.Net40)
         .References(fun r ->
             [
                 r.NuGet("WebSharper.JQueryUI").Reference()
                 r.Assembly "System.Web"
             ])
-    |> fun bt -> bt.WithFramework(bt.Framework.Net40)
 
 let main =
     bt.WebSharper.Library("WebSharper.Formlets.JQueryUI")
