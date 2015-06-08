@@ -166,12 +166,12 @@ module Controls =
 
             // Update on key up events
             input
-            |> Events.OnKeyUp (fun el _ ->
+            |> OnKeyUp (fun el _ ->
                 upd ()
             )
             // Update on change events
             input
-            |> Events.OnChange (fun _ ->
+            |> OnChange (fun _ ->
                 upd ()
             )
             let ac =
