@@ -178,7 +178,7 @@ module Controls =
                 JQueryUI.Autocomplete.New(
                     input ,
                     JQueryUI.AutocompleteConfiguration(
-                        Source = Array.ofSeq source
+                        Source = JQueryUI.AutocompleteSource.Listing (Array.ofSeq source)
                     )
                 )
 
