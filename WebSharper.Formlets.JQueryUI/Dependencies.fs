@@ -11,7 +11,6 @@
 namespace WebSharper.Formlets.JQueryUI
 
 open WebSharper
-open System.Web.UI
 
 module internal Resources =
     open IntelliFactory.Formlets.Base

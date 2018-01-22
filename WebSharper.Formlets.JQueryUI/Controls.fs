@@ -56,14 +56,14 @@ module Controls =
             let dialog =
                 JQueryUI.Dialog.New(genEl ())
             dialog.OnClose (fun _ ->
-                state.Trigger (Result.Success ())
+                state.Trigger (Result<_>.Success ())
             )
             dialog.Enable ()
             dialog.Open ()
 
             let reset () =
                 dialog.Close ()
-                state.Trigger (Result.Failure [])
+                state.Trigger (Result<_>.Failure [])
 
             Div [dialog], reset , state
 
@@ -84,7 +84,7 @@ module Controls =
                     |> List.map (fun (_,f,_) -> f.State)
                     |> Reactive.Sequence
                 Reactive.Select state (fun rs ->
-                    Result.Sequence rs
+                    Result<_>.Sequence rs
 
                 )
             let acc =
@@ -365,7 +365,7 @@ module Controls =
                 )
                 |> Reactive.Switch
 
-            let state = Reactive.Select state Result.Sequence
+            let state = Reactive.Select state Result<_>.Sequence
 
             let list = OL [Attr.Style "list-style-type: none; margin: 0; padding: 0;"];
             let stopEv = Event<_>()
@@ -418,7 +418,7 @@ module Controls =
                     |> List.map (fun (_,f,_) -> f.State)
                     |> Reactive.Sequence
                 Reactive.Select state (fun rs ->
-                    Result.Sequence rs
+                    Result<_>.Sequence rs
 
                 )
             let reset (tabs: JQueryUI.Tabs) =
@@ -505,9 +505,9 @@ module Controls =
                             | _ ->
                                 Some x
                         )
-                        |> Result.Sequence
+                        |> Result<_>.Sequence
                     res
-                    |> Result.Map (List.choose id)
+                    |> Result<_>.Map (List.choose id)
                 )
 
             let tabsBody =

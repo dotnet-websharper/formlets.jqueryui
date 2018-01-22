@@ -217,7 +217,7 @@ module Enhance =
                     |> Formlet.Run (fun confirmed ->
                         match dialogOpt.Value with
                         | Some dialog ->
-                            state.Trigger (Result.Success confirmed)
+                            state.Trigger (Result<_>.Success confirmed)
                             dialog.Close()
                         | None ->
                             ()

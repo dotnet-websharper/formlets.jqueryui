@@ -1,0 +1,25 @@
+type file
+id WebSharper.Formlets.JQueryUI
+authors
+    IntelliFactory
+owners
+    IntelliFactory
+licenseUrl http://websharper.com/licensing
+
+description
+    WebSharper Formlets for JQueryUI
+tags
+    Web JavaScript F# C#
+files
+    ../WebSharper.Formlets.JQueryUI/bin/Release/net461/WebSharper.Formlets.JQueryUI.dll ==> lib/net461
+    ../WebSharper.Formlets.JQueryUI/bin/Release/net461/WebSharper.Formlets.JQueryUI.xml ==> lib/net461
+    ../WebSharper.Formlets.JQueryUI/bin/Release/netstandard2.0/WebSharper.Formlets.JQueryUI.dll ==> lib/netstandard2.0
+    ../WebSharper.Formlets.JQueryUI/bin/Release/netstandard2.0/WebSharper.Formlets.JQueryUI.xml ==> lib/netstandard2.0
+dependencies
+        WebSharper.Html LOCKEDVERSION
+        WebSharper.JQueryUI LOCKEDVERSION
+        WebSharper.Reactive LOCKEDVERSION
+        WebSharper.Formlets LOCKEDVERSION
+        WebSharper LOCKEDVERSION
+frameworkAssemblies
+        System.Web
