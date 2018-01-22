@@ -1,4 +1,4 @@
-(bin|obj)/(Debug|Release)
+(bin|obj)/
 ^[.]?build/
 [.](user|suo)$
 Sample
@@ -6,3 +6,6 @@ web/bin
 web/Scripts
 ^packages/
 ^tools/packages/
+^.fake/
+^paket-files/
+^.vscode/

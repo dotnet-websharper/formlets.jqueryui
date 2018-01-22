@@ -13,8 +13,7 @@ namespace WebSharper.Formlet.JQueryUI
 
 open WebSharper
 open System.Reflection
-open System.Web.UI
 
-[<assembly: WebResource("Formlet.css", "text/css", PerformSubstitution = true)>]
+[<assembly: WebResource("Formlet.css", "text/css")>]
 
 do ()
