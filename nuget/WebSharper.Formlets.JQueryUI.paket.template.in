@@ -16,10 +16,10 @@ files
     ../WebSharper.Formlets.JQueryUI/bin/Release/netstandard2.0/WebSharper.Formlets.JQueryUI.dll ==> lib/netstandard2.0
     ../WebSharper.Formlets.JQueryUI/bin/Release/netstandard2.0/WebSharper.Formlets.JQueryUI.xml ==> lib/netstandard2.0
 dependencies
-        WebSharper.Html LOCKEDVERSION
-        WebSharper.JQueryUI LOCKEDVERSION
-        WebSharper.Reactive LOCKEDVERSION
-        WebSharper.Formlets LOCKEDVERSION
-        WebSharper LOCKEDVERSION
+        WebSharper.Html ~> LOCKEDVERSION/3
+        WebSharper.JQueryUI ~> LOCKEDVERSION/3
+        WebSharper.Reactive ~> LOCKEDVERSION/3
+        WebSharper.Formlets ~> LOCKEDVERSION/3
+        WebSharper ~> LOCKEDVERSION/3
 frameworkAssemblies
         System.Web
