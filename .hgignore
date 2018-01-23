@@ -9,3 +9,4 @@ web/Scripts
 ^.fake/
 ^paket-files/
 ^.vscode/
+^nuget/.*\.paket\.template
