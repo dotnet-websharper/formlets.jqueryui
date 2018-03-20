@@ -11,6 +11,7 @@
     <Compile Include="Utils.fs" />
     <Compile Include="Controls.fs" />
     <Compile Include="Enhance.fs" />
+    <EmbeddedResource Include="styles/Formlet.css" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <Reference Include="System.Web" />
