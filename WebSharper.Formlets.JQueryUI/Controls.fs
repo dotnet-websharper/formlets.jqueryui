@@ -409,7 +409,7 @@ module Controls =
 
                     let id = NewId ()
                     dict.[id] <- Reactive.Heat form.State
-                    let icon = Span [Attr.Class "ui-icon ui-icon-arrowthick-2-n-s"]
+                    let icon = Tags.Span [Attr.Class "ui-icon ui-icon-arrowthick-2-n-s"]
                     let tbl = Table [TBody [TR [TD [icon] ; TD [ elem]]]]
                     LI [Attr.Id id] -< [tbl]
 
@@ -728,12 +728,12 @@ module Controls =
             let dict = System.Collections.Generic.Dictionary<string, string * 'T>()
 
             let dragElem id label =
-                Span (GetStyle dc.DraggableStyle) -<
+                Tags.Span (GetStyle dc.DraggableStyle) -<
                 [Attr.Class dc.DraggableClass] -<
                 [Attr.Id id] -< [Text label]
 
             let dropElem id label =
-                Span (GetStyle dc.DroppableStyle) -<
+                Tags.Span (GetStyle dc.DroppableStyle) -<
                 [Attr.Class dc.DroppableClass]-<
                 [Attr.Id id] -< [Text label]
 

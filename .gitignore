@@ -12,3 +12,4 @@ tools/packages/
 paket-files/
 .vscode/
 nuget/*.paket.template
+/.vs
