@@ -399,22 +399,22 @@ NUGET
       Microsoft.NETCore.Targets (>= 1.1) - restriction: || (&& (== net461) (>= dnxcore50)) (&& (== net461) (< net451)) (== netstandard2.0)
       System.Runtime (>= 4.3) - restriction: || (&& (== net461) (>= dnxcore50)) (&& (== net461) (< net451)) (== netstandard2.0)
   remote: https://daily.websharper.com/nuget
-    WebSharper (4.6.0.361)
+    WebSharper (4.6.1.381)
       FSharp.Core (>= 4.2.3)
-    WebSharper.Formlets (4.6.0.156)
-      WebSharper (>= 4.6 < 4.7)
+    WebSharper.Formlets (4.6.0.160)
+      WebSharper (>= 4.6.1 < 4.7)
       WebSharper.Html (>= 4.6 < 4.7)
       WebSharper.Reactive (>= 4.6 < 4.7)
-    WebSharper.FSharp (4.6.0.361)
-      WebSharper (4.6.0.361)
-    WebSharper.Html (4.6.0.166)
+    WebSharper.FSharp (4.6.1.381)
+      WebSharper (4.6.1.381)
+    WebSharper.Html (4.6.0.170)
       IntelliFactory.Xml (>= 0.6.64 < 0.7)
-      WebSharper (>= 4.6 < 4.7)
-    WebSharper.JQueryUI (4.6.0.151)
-      WebSharper (>= 4.6 < 4.7)
+      WebSharper (>= 4.6.1 < 4.7)
+    WebSharper.JQueryUI (4.6.0.155)
+      WebSharper (>= 4.6.1 < 4.7)
       WebSharper.Html (>= 4.6 < 4.7)
-    WebSharper.Reactive (4.6.0.150)
-      WebSharper (>= 4.6 < 4.7)
+    WebSharper.Reactive (4.6.0.154)
+      WebSharper (>= 4.6.1 < 4.7)
 
 GROUP build
 RESTRICTION: == net45
@@ -425,8 +425,8 @@ NUGET
     FAKE (5.16)
     FSharp.Compiler.Tools (10.2.3)
     FSharp.Core (4.7)
-    Mono.Cecil (0.11)
-    Newtonsoft.Json (12.0.2)
+    Mono.Cecil (0.11.2)
+    Newtonsoft.Json (12.0.3)
     Paket.Core (5.141)
       Chessie (>= 0.6)
       FSharp.Compiler.Tools
@@ -438,4 +438,4 @@ GROUP wsbuild
 
 GIT
   remote: https://github.com/dotnet-websharper/build-script
-     (951f1db60fdbe057a5b96f0012dab0633922bb32)
+     (90eb54d1b2a21f568f22409b47814a7cf215900d)
